@@ -1,0 +1,6 @@
+args = {
+    'gw_station_id' : 'aaabbbbb-cccc-dddd-eeee-ffffffgggggg' , 
+    'gw_account' : 'user@example.com',
+    'gw_password' : 'darkHorseBatteryStaple123',
+    'city' : 'London',
+}
