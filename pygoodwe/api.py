@@ -29,9 +29,9 @@ class API(object):
         if skipload:
             self.data = 0
         else:
-            s elf.getCurrentReadings(raw=True)
+            self.getCurrentReadings(raw=True)
 
-    def getCurrentReadings(self, raw=True):
+    def _getCurrentReadings(self, raw=True):
         ''' Download the most recent readings from the GOODWE API. '''
 
         payload = {
@@ -43,28 +43,10 @@ class API(object):
 
         if raw:
             return self.data
+            
+    def getCurrentReadings(self, raw=True):
+        return self._getCurrentReadings(raw)
         
-        inverterData = self.data['inverter'][0]
-
-        result = {
-            'status' : self.status[inverterData['status']],
-            'pgrid_w' : inverterData['out_pac'],
-            'eday_kwh' : inverterData['eday'],
-            'etotal_kwh' : inverterData['etotal'],
-            'grid_voltage' : self.parseValue(inverterData['output_voltage'], 'V'),
-            'pv_voltage' : inverterData['d']['vpv1'],
-            'latitude' : self.data['info'].get('latitude'),
-            'longitude' : self.data['info'].get('longitude'),
-            'inverter_type' : inverterData['type']
-        }
-
-        message = "{status}, {pgrid_w} W now, {eday_kwh} kWh today".format(**result)
-        if result['status'] == 'Normal' or result['status'] == 'Offline':
-            logging.info(message)
-        else:
-            logging.warning(message)
-
-        return result
 
 
     #def getDayReadings(self, date):
@@ -185,14 +167,16 @@ class API(object):
             self.getCurrentReadings(True)
         return float(self.data['soc']['power'])
 
-    def get_batteries_soc(self):
+    def _get_batteries_soc(self):
         """ returns a list of the state of charge for the batteries
         returns: list[float,]
         """
         if not self.data:
             self.getCurrentReadings(True)
         return [ float(inverter['invert_full']['soc']) for inverter in self.data['inverter'] ]
-
+    
+    def get_batteries_soc(self):
+        return self._get_batteries_soc()
 
 class MovingAverage:
 
@@ -216,3 +200,44 @@ class MovingAverage:
         self.queue = self.queue[-self.n:]
 
         return self.numerator / self.denominator
+        
+class SingleInverter(API):
+    def __init__(self, **kwargs):
+        # instantiate the base class
+        super().__init__(**kwargs)
+        
+    def getCurrentReadings(self, raw=True):
+        """ grabs the data and makes sure self.data only has a single inverter """
+        
+        # update the data
+        self._getCurrentReadings(raw)
+        # reduce self.data['inverter'] to a single dict from a list
+        if len(self.data['inverter']):
+            self.data['inverter'] = self.data['inverter'][0]
+
+
+        
+        #if self.data[]
+        
+    foo = """    
+    inverterData = self.data['inverter'][0]
+
+        result = {
+            'status' : self.status[inverterData['status']],
+            'pgrid_w' : inverterData['out_pac'],
+            'eday_kwh' : inverterData['eday'],
+            'etotal_kwh' : inverterData['etotal'],
+            'grid_voltage' : self.parseValue(inverterData['output_voltage'], 'V'),
+            'pv_voltage' : inverterData['d']['vpv1'],
+            'latitude' : self.data['info'].get('latitude'),
+            'longitude' : self.data['info'].get('longitude'),
+            'inverter_type' : inverterData['type']
+        }
+
+        message = "{status}, {pgrid_w} W now, {eday_kwh} kWh today".format(**result)
+        if result['status'] == 'Normal' or result['status'] == 'Offline':
+            logging.info(message)
+        else:
+            logging.warning(message)
+
+        return result"""
