@@ -13,7 +13,7 @@ Determine the Station ID from the GOODWE site as follows. Open the [Sems Portal]
 
     https://www.semsportal.com/powerstation/powerstatussnmin/11112222-aaaa-bbbb-cccc-ddddeeeeeffff
 
-Then the Station ID is `11112222-aaaa-bbbb-cccc-ddddeeeeeffff9a6415bf-cdcc-46af-b393-2b442fa89a7f`.
+Then the Station ID is `11112222-aaaa-bbbb-cccc-ddddeeeeeffff`.
 
 ## Contributions
 
