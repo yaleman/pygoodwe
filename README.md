@@ -15,6 +15,10 @@ Determine the Station ID from the GOODWE site as follows. Open the [Sems Portal]
 
 Then the Station ID is `11112222-aaaa-bbbb-cccc-ddddeeeeeffff9a6415bf-cdcc-46af-b393-2b442fa89a7f`.
 
+## Contributions
+
+Please feel free to lodge an [issue or pull request on GitHub](https://github.com/yaleman/pygoodwe/issues).
+
 ## Thanks
 
 * Based heavily off the work of [Mark Ruys and his gw2pvo software](https://github.com/markruys/gw2pvo) - I needed something more flexible, so I made this.
@@ -22,3 +26,7 @@ Then the Station ID is `11112222-aaaa-bbbb-cccc-ddddeeeeeffff9a6415bf-cdcc-46af-
 ## Disclaimer
 
 GOODWE access is based on the undocumented API used by mobile apps. This could break at any time.
+
+# Version history
+
+* 0.0.1 - 0.0.3 2019-10-09 Initial versions, basically just getting packaging and the most simple things working

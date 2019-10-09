@@ -19,3 +19,4 @@ __pycache__/config.cpython-37.pyc
 dist/
 pygoodwe.egg-info
 build
+test.py
