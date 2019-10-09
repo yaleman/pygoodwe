@@ -25,3 +25,5 @@ test.py
 testdata2.json
 testdata.json
 test2.py
+.pytest/*
+.pytest_cache/v

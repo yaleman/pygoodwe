@@ -388,9 +388,11 @@ class SingleInverter(API):
             loadflow = float(self.data['powerflow']['load'])
         # I'd love to see the *house* generate power
         if self.data['powerflow']['loadStatus'] == -1:
-            loadflow_direction = "Using"
+            loadflow_direction = "Importing"
+        elif self.data['powerflow']['loadStatus'] == 1:
+            loadflow_direction = "Using Battery"
         else:
-            raise ValueError("Your 'load' is generating power.")
+            raise ValueError(f"Your 'load' is doing something odd - status is '{self.data['powerflow']['loadStatus']}''.")
         self.loadflow = loadflow
         self.loadflow_direction = loadflow_direction
         return loadflow
