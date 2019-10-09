@@ -20,3 +20,8 @@ dist/
 pygoodwe.egg-info
 build
 test.py
+test.py
+.vscode/settings.json
+testdata2.json
+testdata.json
+test2.py
