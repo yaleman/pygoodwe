@@ -110,9 +110,6 @@ class API(object):
             self.data = json.loads(fh.read())
         return True
 
-
-
-        
     def loaddata(self, filename):
         """ loads a json object from a file with a string. write this out with json.dumps(self.data) """
         self._loaddata(filename)
@@ -126,14 +123,21 @@ class API(object):
 
         # GOODWE server
         self.data = self.call("v1/PowerStation/GetMonitorDetailByPowerstationId", payload)
-
+        
         if raw:
             return self.data
 
-    def getCurrentReadings(self, raw=True):
-        return self._getCurrentReadings(raw)
-        
-
+    def getCurrentReadings(self, raw=True, retry=1, maxretries=5, delay=30):
+        self._getCurrentReadings(raw)
+        if not self.data.get('inverter'):
+            if retry < maxretries:
+                logging.error('no inverter data, try %s, trying again in %s seconds', retry, delay)
+                time.sleep(delay)
+                return self.getCurrentReadings(raw=raw, retry=retry+1, maxretries=maxretries, delay=delay)
+            else:
+                logging.error('No inverter data after %s retries, quitting.', retry)
+                sys.exit(f"No inverter data after {retry} retries, quitting.")
+        return self.data
 
     #def getDayReadings(self, date):
     #    date_s = date.strftime('%Y-%m-%d')
@@ -224,9 +228,8 @@ class API(object):
             except requests.exceptions.RequestException as exp:
                 logging.warning(exp)
             time.sleep(i ** 3)
-        else:
-            logging.error("Failed to call GoodWe API")
 
+        logging.error("Failed to call GoodWe API")
         return {}
 
     def parseValue(self, value, unit):
@@ -329,16 +332,25 @@ class SingleInverter(API):
         
     def loaddata(self, filename):
         self._loaddata(filename)
-        if len(self.data['inverter']):
+        if self.data.get('inverter'):
             self.data['inverter'] = self.data['inverter'][0]
 
-    def getCurrentReadings(self, raw=True):
+    def getCurrentReadings(self, raw=True, retry=1, maxretries=5, delay=30):
         """ grabs the data and makes sure self.data only has a single inverter """
         # update the data
         self._getCurrentReadings(raw)
         # reduce self.data['inverter'] to a single dict from a list
-        if len(self.data['inverter']):
+        if self.data.get('inverter'):
             self.data['inverter'] = self.data['inverter'][0]
+        else:
+            if retry < maxretries:
+                logging.error('no inverter data, try %s, trying again in %s seconds', retry, delay)
+                time.sleep(delay)
+                return self.getCurrentReadings(raw=raw, retry=retry+1, maxretries=maxretries, delay=delay)
+            else:
+                logging.error('No inverter data after %s retries, quitting.', retry)
+                sys.exit(f"No inverter data after {retry} retries, quitting.")
+            
 
     def get_station_location(self):
         if not self.data:
@@ -387,9 +399,9 @@ class SingleInverter(API):
         """
         if not self.data:
             self.getCurrentReadings()
-        if not inverter['invert_full'].get('soc', False):
+        if not self.data.get('soc', False):
             raise ValueError('No state of charge available from data')
-        return float(inverter['invert_full']['soc'])
+        return float(self.data['soc'].get('power'))
     
     def get_battery_soc(self):
         """ returns the single value state of charge for the batteries in the plant 
