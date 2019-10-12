@@ -245,25 +245,15 @@ class API(object):
         return False
 
 
-    def get_battery_soc(self):
-        """ returns the single value state of charge for the batteries in the plant 
-        returns : float
-        """
-        if not self.data:
-            self.getCurrentReadings(True)
-        return float(self.data['soc']['power'])
-
     def _get_batteries_soc(self):
         """ returns a list of the state of charge for the batteries
         returns: list[float,]
         """
         if not self.data:
-            self.getCurrentReadings(True)
+            self.getCurrentReadings()
         return [ float(inverter['invert_full']['soc']) for inverter in self.data['inverter'] ]
     
     def get_batteries_soc(self):
-        if not self.data:
-            self.getCurrentReadings(True)
         return self._get_batteries_soc()
 
     def _get_station_location(self):
@@ -344,20 +334,15 @@ class SingleInverter(API):
 
     def getCurrentReadings(self, raw=True):
         """ grabs the data and makes sure self.data only has a single inverter """
-        
         # update the data
         self._getCurrentReadings(raw)
         # reduce self.data['inverter'] to a single dict from a list
         if len(self.data['inverter']):
             self.data['inverter'] = self.data['inverter'][0]
 
-
-        
-        #if self.data[]
-        
     def get_station_location(self):
         if not self.data:
-            self.getCurrentReadings(True)
+            self.getCurrentReadings()
         return { 
             'latitude' : self.data['info']['latitude'],
             'longitude' : self.data['info']['longitude']
@@ -366,7 +351,7 @@ class SingleInverter(API):
     def getPVFlow(self):
         """ returns the current flow amount of the PV panels """
         if not self.data:
-            self.getCurrentReadings(True)
+            self.getCurrentReadings()
         if self.data['powerflow']['pv'].endswith('(W)'):
             pvflow = self.data['powerflow']['pv'][:-3]
         else:
@@ -376,12 +361,12 @@ class SingleInverter(API):
     def getVoltage(self):
         """ gets the current line voltage """
         if not self.data:
-            self.getCurrentReadings(True)
+            self.getCurrentReadings()
         return float(self.data['inverter']['invert_full']['vac1'])
 
     def getLoadFlow(self):
         if not self.data:
-            self.getCurrentReadings(True)
+            self.getCurrentReadings()
         if self.data['powerflow']['bettery'].endswith('(W)'):
             loadflow = float(self.data['powerflow']['load'][:-3])
         else:
@@ -396,3 +381,18 @@ class SingleInverter(API):
         self.loadflow = loadflow
         self.loadflow_direction = loadflow_direction
         return loadflow
+
+    def _get_batteries_soc(self):
+        """ returns the state of charge of the battery
+        """
+        if not self.data:
+            self.getCurrentReadings()
+        if not inverter['invert_full'].get('soc', False):
+            raise ValueError('No state of charge available from data')
+        return float(inverter['invert_full']['soc'])
+    
+    def get_battery_soc(self):
+        """ returns the single value state of charge for the batteries in the plant 
+        returns : float
+        """
+        return self._get_batteries_soc()

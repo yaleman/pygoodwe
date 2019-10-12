@@ -32,3 +32,4 @@ GOODWE access is based on the undocumented API used by mobile apps. This could b
 * 0.0.1 - 0.0.3 2019-10-09 Initial versions, basically just getting packaging and the most simple things working
 * 0.0.4 2019-10-09 Fixed a bug that mis-identified the load generating power.
 * 0.0.5 2019-10-09 Updated setup.py to build in a requirement for `requests`
+* 0.0.6-0.0.7 2019-10-12 Updated SingleInverter to return battery state of charge, then fixed the fact I was implementing the same thing two different ways...
