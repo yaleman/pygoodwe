@@ -2,12 +2,12 @@
 
 import json
 from config import args
-from pygoodwe import API, SingleInverter
+from pygoodwe import SingleInverter
 
 gw = SingleInverter(
-        system_id=args.get('gw_station_id'), 
-        account=args.get('gw_account'), 
-        password=args.get('gw_password'),
+        system_id=args.get('gw_station_id', '1'), 
+        account=args.get('gw_account', 'thiswillnotwork'), 
+        password=args.get('gw_password', 'thiswillnotwork'),
         )
 print("Grabbing data")
 gw.getCurrentReadings(raw=True)

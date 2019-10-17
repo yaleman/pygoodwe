@@ -243,9 +243,10 @@ class API(object):
         """ boolean result for if the batteries are full. you can set your given 'full' percentage in float if you want to lower this a little
         are_batteries_full(fullstate=90.0): returns bool
         """
-        if self.get_battery_soc() > fullstate:
-            return True
-        return False
+        for battery in self.get_batteries_soc():
+            if battery < fullstate:
+                return False
+        return True 
 
 
     def _get_batteries_soc(self):
