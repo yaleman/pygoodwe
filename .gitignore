@@ -22,8 +22,7 @@ build
 test.py
 test.py
 .vscode/settings.json
-testdata2.json
-testdata.json
+testdata*.json
 test2.py
 .pytest/*
 .pytest_cache/v
