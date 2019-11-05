@@ -35,3 +35,5 @@ GOODWE access is based on the undocumented API used by mobile apps. This could b
 * 0.0.6-0.0.7 2019-10-12 Updated SingleInverter to return battery state of charge, then fixed the fact I was implementing the same thing two different ways...
 * 0.0.8 2019-10-12 I really should write some tests for this. Fixed SingleInverter.get_battery_soc() to actually work.
 * 0.0.9 2019-10-12 Catching an error when the inverter data doesn't load.
+* 0.0.10 ... not sure?
+* 0.0.11 2019-11-05 Commented out some non-functional code.
