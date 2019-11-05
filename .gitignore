@@ -25,5 +25,6 @@ test.py
 testdata*.json
 test2.py
 .pytest/*
-.pytest_cache/v
+.pytest_cache/*
 .mypy_cache
+.scannerwork/*
