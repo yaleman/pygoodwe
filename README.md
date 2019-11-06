@@ -3,6 +3,8 @@
 
 A command line tool and python library to query the GOODWE SEMS Portal APIs.
 
+![travis-ci build status](https://travis-ci.org/yaleman/pygoodwe.svg?branch=master)
+
 ## Installation
 
 You need to have Python 3 and pip installed. Then:
