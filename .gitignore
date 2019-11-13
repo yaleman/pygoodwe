@@ -28,3 +28,4 @@ test2.py
 .pytest_cache/*
 .mypy_cache
 .scannerwork/*
+sonarqube-test.sh
