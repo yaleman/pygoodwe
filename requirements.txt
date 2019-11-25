@@ -14,7 +14,7 @@ keyring==19.2.0
 more-itertools==7.2.0
 packaging==19.2
 pkginfo==1.5.0.1
-pluggy==0.13.0
+pluggy==0.13.1
 py==1.8.0
 pycparser==2.19
 pygments==2.4.2
@@ -25,8 +25,8 @@ requests-toolbelt==0.9.1
 requests==2.22.0
 secretstorage==3.1.1 ; sys_platform == 'linux'
 six==1.13.0
-tqdm==4.38.0
-twine==3.0.0
+tqdm==4.39.0
+twine==3.1.0
 urllib3==1.25.7
 wcwidth==0.1.7
 webencodings==0.5.1
