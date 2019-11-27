@@ -17,9 +17,9 @@ pkginfo==1.5.0.1
 pluggy==0.13.1
 py==1.8.0
 pycparser==2.19
-pygments==2.4.2
+pygments==2.5.1
 pyparsing==2.4.5
-pytest==5.3.0
+pytest==5.3.1
 readme-renderer==24.0
 requests-toolbelt==0.9.1
 requests==2.22.0
