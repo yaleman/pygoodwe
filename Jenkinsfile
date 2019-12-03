@@ -11,21 +11,23 @@ pipeline {
             
         }
     }
-    stage('Sonarqube') {
-        environment {
-            scannerHome = tool 'sonarscanner_4.2.0.1873'
-        }
-        steps {
-            unstash name: "coverage"
-            withSonarQubeEnv('housenet') {
-                sh "${scannerHome}/bin/sonar-scanner -D sonar.projectName=pygoodwe -D sonar.projectKey=pygoodwe -D sonar.sources=."
+    stages {
+        stage('Sonarqube') {
+            environment {
+                scannerHome = tool 'sonarscanner_4.2.0.1873'
             }
+            steps {
+                unstash name: "coverage"
+                withSonarQubeEnv('housenet') {
+                    sh "${scannerHome}/bin/sonar-scanner -D sonar.projectName=pygoodwe -D sonar.projectKey=pygoodwe -D sonar.sources=."
+                }
 
+            }
         }
-    }
-    stage ('Build') {
-        steps {
-            sh "pipenv install --dev && pipenv run python setup.py sdist bdist_wheel"
+        stage ('Build') {
+            steps {
+                sh "pipenv install --dev && pipenv run python setup.py sdist bdist_wheel"
+            }
         }
     }
 }
