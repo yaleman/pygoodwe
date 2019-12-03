@@ -39,3 +39,4 @@ GOODWE access is based on the undocumented API used by mobile apps. This could b
 * 0.0.9 2019-10-12 Catching an error when the inverter data doesn't load.
 * 0.0.10 ... not sure?
 * 0.0.11 2019-11-05 Commented out some non-functional code.
+* 0.0.12 2019-12-03 Removed the non-used code, fixed a bug.
