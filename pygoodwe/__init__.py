@@ -38,10 +38,13 @@ class API(object):
     def loaddata(self, filename):
         """ loads a json object from a file with a string. write this out with json.dumps(self.data) """
         self._loaddata(filename)
-            
-    def _getCurrentReadings(self, raw=True):
-        ''' Download the most recent readings from the GOODWE API. '''
 
+    def get_current_readings(self, raw=True, retry=1, maxretries=5, delay=30):
+        """ this is an overlay function to help with migration 
+            to fixing the name of the below function """
+        return self.getCurrentReadings(self, raw=True, retry=1, maxretries=5, delay=30)
+
+    def getCurrentReadings(self, raw=True, retry=1, maxretries=5, delay=30):
         payload = {
             'powerStationId' : self.system_id
         }
@@ -49,11 +52,6 @@ class API(object):
         # GOODWE server
         self.data = self.call("v1/PowerStation/GetMonitorDetailByPowerstationId", payload)
         
-        if raw:
-            return self.data
-
-    def getCurrentReadings(self, raw=True, retry=1, maxretries=5, delay=30):
-        self._getCurrentReadings(raw)
         if not self.data.get('inverter'):
             if retry < maxretries:
                 logging.error('no inverter data, try %s, trying again in %s seconds', retry, delay)
@@ -64,69 +62,60 @@ class API(object):
                 sys.exit(f"No inverter data after {retry} retries, quitting.")
         return self.data
 
-    #def getDayReadings(self, date):
-    #    date_s = date.strftime('%Y-%m-%d')
-
-    #    payload = {
-    #        'powerStationId' : self.system_id
-    #    }
-    #    data = self.call("v1/PowerStation/GetMonitorDetailByPowerstationId", payload)
-    #   if 'info' not in data:
-        #     logging.warning(date_s + " - Received bad data " + str(data))
-        #     return result
-
-        # result = {
-        #     'latitude' : data['info'].get('latitude'),
-        #     'longitude' : data['info'].get('longitude'),
-        #     'entries' : []
-        # }
-
-        # payload = {
-        #     'powerstation_id' : self.system_id,
-        #     'count' : 1,
-        #     'date' : date_s
-        # }
-        # data = self.call("PowerStationMonitor/GetPowerStationPowerAndIncomeByDay", payload)
-        # if len(data) == 0:
-        #     logging.warning(date_s + " - Received bad data " + str(data))
-        #     return result
-
-        # eday_kwh = data[0]['p']
-
-        # payload = {
-        #     'id' : self.system_id,
-        #     'date' : date_s
-        # }
-        # data = self.call("PowerStationMonitor/GetPowerStationPacByDayForApp", payload)
-        # if 'pacs' not in data:
-        #     logging.warning(date_s + " - Received bad data " + str(data))
-        #     return result
-
-        # minutes = 0
-        # eday_from_power = 0
-        # for sample in data['pacs']:
-        #     parsed_date = datetime.strptime(sample['date'], "%m/%d/%Y %H:%M:%S")
-        #     next_minutes = parsed_date.hour * 60 + parsed_date.minute
-        #     sample['minutes'] = next_minutes - minutes
-        #     minutes = next_minutes
-        #     eday_from_power += sample['pac'] * sample['minutes']
-        # factor = eday_kwh / eday_from_power if eday_from_power > 0 else 1
-
-        # eday_kwh = 0
-        # for sample in data['pacs']:
-        #     date += timedelta(minutes=sample['minutes'])
-        #     pgrid_w = sample['pac']
-        #     increase = pgrid_w * sample['minutes'] * factor
-        #     if increase > 0:
-        #         eday_kwh += increase
-        #         result['entries'].append({
-        #             'dt' : date,
-        #             'pgrid_w': pgrid_w,
-        #             'eday_kwh': round(eday_kwh, 3)
-        #         })
-
-        # return result
-
+    # def getDayReadings(self, date):
+    #     date_s = date.strftime('%Y-%m-%d')
+    #     payload = {
+    #         'powerStationId' : self.system_id
+    #     }
+    #     data = self.call("v1/PowerStation/GetMonitorDetailByPowerstationId", payload)
+    #     if 'info' not in data:
+    #     logging.warning(date_s + " - Received bad data " + str(data))
+    #         return result
+    #     result = {
+    #         'latitude' : data['info'].get('latitude'),
+    #         'longitude' : data['info'].get('longitude'),
+    #         'entries' : []
+    #     }
+    #     payload = {
+    #         'powerstation_id' : self.system_id,
+    #         'count' : 1,
+    #         'date' : date_s
+    #     }
+    #     data = self.call("PowerStationMonitor/GetPowerStationPowerAndIncomeByDay", payload)
+    #     if len(data) == 0:
+    #         logging.warning(date_s + " - Received bad data " + str(data))
+    #         return result
+    #     eday_kwh = data[0]['p']
+    #     payload = {
+    #         'id' : self.system_id,
+    #         'date' : date_s
+    #     }
+    #     data = self.call("PowerStationMonitor/GetPowerStationPacByDayForApp", payload)
+    #     if 'pacs' not in data:
+    #         logging.warning(date_s + " - Received bad data " + str(data))
+    #         return result
+    #     minutes = 0
+    #     eday_from_power = 0
+    #     for sample in data['pacs']:
+    #         parsed_date = datetime.strptime(sample['date'], "%m/%d/%Y %H:%M:%S")
+    #         next_minutes = parsed_date.hour * 60 + parsed_date.minute
+    #         sample['minutes'] = next_minutes - minutes
+    #         minutes = next_minutes
+    #         eday_from_power += sample['pac'] * sample['minutes']
+    #     factor = eday_kwh / eday_from_power if eday_from_power > 0 else 1
+    #     eday_kwh = 0
+    #     for sample in data['pacs']:
+    #         date += timedelta(minutes=sample['minutes'])
+    #         pgrid_w = sample['pac']
+    #         increase = pgrid_w * sample['minutes'] * factor
+    #         if increase > 0:
+    #             eday_kwh += increase
+    #             result['entries'].append({
+    #                 'dt' : date,
+    #                 'pgrid_w': pgrid_w,
+    #                 'eday_kwh': round(eday_kwh, 3)
+    #             })
+    #     return result
 
     def call(self, url : str, payload : str, max_tries : int=10):
         for i in range(1, 4):
@@ -206,6 +195,11 @@ class API(object):
     def getLoadFlow(self):
         raise NotImplementedError("multi-unit load watts isn't implemented yet")
 
+    def get_inverter_temperature(self):
+        if not self.data:
+            self.get_current_readings(True)
+        return [ float(inverter['invert_full']['tempperature']) for inverter in self.data['inverter']]
+
     def getDataPvoutput(self):
         """ updates and returns the data necessary for a one-shot pvoutput upload 
             'd' : testdate.strftime("%Y%m%d"),
@@ -224,7 +218,7 @@ class API(object):
         data['t'] = timestamp.strftime("%H:%M") # time
         data['v2'] = self.getPVFlow() # PV Generation
         data['v4'] = self.getLoadFlow() # power consumption
-        #data['v5'] = 23.5 # temperature
+        data['v5'] = self.get_inverter_temperature() # inverter temperature
         data['v6'] = self.getVoltage() # voltage
         return data
 
@@ -264,7 +258,7 @@ class SingleInverter(API):
     def getCurrentReadings(self, raw=True, retry=1, maxretries=5, delay=30):
         """ grabs the data and makes sure self.data only has a single inverter """
         # update the data
-        self._getCurrentReadings(raw)
+        super().getCurrentReadings(self, raw)
         # reduce self.data['inverter'] to a single dict from a list
         if self.data.get('inverter'):
             self.data['inverter'] = self.data['inverter'][0]
@@ -334,3 +328,8 @@ class SingleInverter(API):
         returns : float
         """
         return self._get_batteries_soc()
+
+    def get_inverter_temperature(self):
+        if not self.data:
+            self.get_current_readings(True)
+        return float(self.data['inverter']['tempperature'])
