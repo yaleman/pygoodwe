@@ -18,7 +18,7 @@ py==1.8.1
 pycparser==2.19
 pygments==2.5.2
 pyparsing==2.4.6
-pytest==5.3.3
+pytest==5.3.4
 readme-renderer==24.0
 requests-toolbelt==0.9.1
 requests==2.22.0
@@ -29,4 +29,4 @@ twine==3.1.1
 urllib3==1.25.7
 wcwidth==0.1.8
 webencodings==0.5.1
-zipp==1.0.0
+zipp==2.0.0
