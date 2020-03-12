@@ -8,17 +8,17 @@ cryptography==2.8
 docutils==0.16
 idna==2.9
 importlib-metadata==1.5.0 ; python_version < '3.8'
-jeepney==0.4.2 ; sys_platform == 'linux'
-keyring==21.1.0
+jeepney==0.4.3 ; sys_platform == 'linux'
+keyring==21.1.1
 more-itertools==8.2.0
-packaging==20.1
+packaging==20.3
 pkginfo==1.5.0.1
 pluggy==0.13.1
 py==1.8.1
-pycparser==2.19
-pygments==2.5.2
+pycparser==2.20
+pygments==2.6.1
 pyparsing==2.4.6
-pytest==5.3.5
+pytest==5.4.0
 readme-renderer==24.0
 requests-toolbelt==0.9.1
 requests==2.23.0
@@ -29,4 +29,4 @@ twine==3.1.1
 urllib3==1.25.8
 wcwidth==0.1.8
 webencodings==0.5.1
-zipp==3.0.0
+zipp==3.1.0
