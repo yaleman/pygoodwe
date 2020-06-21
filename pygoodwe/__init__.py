@@ -191,6 +191,12 @@ class API(object):
         if not self.data:
             self.getCurrentReadings(True)
         return [ float(inverter['invert_full']['vac1']) for inverter in self.data['inverter']]
+    
+     def getPmeter(self):
+        """ gets the current line pmeter """
+        if not self.data:
+            self.getCurrentReadings()
+        return float(self.data['inverter']['invert_full']['pmeter'])
 
     def getLoadFlow(self):
         raise NotImplementedError("multi-unit load watts isn't implemented yet")
