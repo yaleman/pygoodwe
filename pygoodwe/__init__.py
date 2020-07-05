@@ -23,7 +23,7 @@ class API(object):
         self.account = account
         self.password = password
         self.token = '{"version":"v2.0.4","client":"ios","language":"en"}'
-        self.global_url = 'https://globalapi.sems.com.cn/api/'
+        self.global_url = 'https://semsportal.com/api/'
         self.base_url = self.global_url
         self.status = {
             -1 : 'Offline',
