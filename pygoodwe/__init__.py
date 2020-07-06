@@ -12,24 +12,22 @@ POWERFLOW_STATUS_TEXT = {
     -1 : "Outward",
 }
 
-class API(object):
+API_URL = 'https://semsportal.com/api/'
+
+class API():
     """ API implementation """
-    def __init__(self, system_id: str, account: str, password: str, skipload: bool = False):
+    def __init__(self, system_id: str, account: str, password: str, skipload: bool = False, api_url: str = API_URL):
         """
         lang: Real Soon Now it'll filter out any responses without that language
         skipload: don't run self.getCurrentReadings() on init
+        api_url: you can change the API endpoint it hits
         """
         self.system_id = system_id
         self.account = account
         self.password = password
         self.token = '{"version":"v2.0.4","client":"ios","language":"en"}'
-        self.global_url = 'https://globalapi.sems.com.cn/api/'
+        self.global_url = api_url
         self.base_url = self.global_url
-        self.status = {
-            -1 : 'Offline',
-            0 : 'Waiting',
-            1 : 'Normal',
-        }
         if skipload:
             self.data = 0
         else:
@@ -59,15 +57,17 @@ class API(object):
         # GOODWE server
         self.data = self.call("v1/PowerStation/GetMonitorDetailByPowerstationId", payload)
 
+        retval = self.data
+
         if not self.data.get('inverter'):
             if retry < maxretries:
                 logging.error('no inverter data, try %s, trying again in %s seconds', retry, delay)
                 time.sleep(delay)
-                return self.getCurrentReadings(raw=raw, retry=retry+1, maxretries=maxretries, delay=delay)
+                retval = self.getCurrentReadings(raw=raw, retry=retry+1, maxretries=maxretries, delay=delay)
             else:
                 logging.error('No inverter data after %s retries, quitting.', retry)
                 sys.exit(f"No inverter data after {retry} retries, quitting.")
-        return self.data
+        return retval
 
     # def getDayReadings(self, date):
     #     date_s = date.strftime('%Y-%m-%d')
@@ -139,7 +139,7 @@ class API(object):
                 data = response.json()
                 logging.debug(data)
 
-                if data['msg'] == 'success' and data['data'] is not None:
+                if data['msg'] == 'success' and data['data'] is not None: #pylint: disable=no-else-return
                     return data['data']
                 else:
                     login_payload = {
@@ -162,7 +162,7 @@ class API(object):
         logging.error("Failed to call GoodWe API")
         return {}
 
-    def parseValue(self, value, unit): #pylint: disable=invalid-name
+    def parseValue(self, value, unit): #pylint: disable=invalid-name, no-self-use
         """ takes a string value and reutrns it as a float (if possible) """
         try:
             return float(value.rstrip(unit))
@@ -253,32 +253,6 @@ class API(object):
         data['v6'] = self.getVoltage() # voltage
         return data
 
-class MovingAverage:
-    """ defines a moving average for calculations """
-    def __init__(self, n):
-        self.n = round(n) if n > 0 else 1 #pylint: disable=invalid-name
-        self.denominator = self.n * (self.n + 1) / 2
-        self.queue = []
-        self.total = 0
-        self.numerator = 0
-
-    def add(self, inputlist):
-        """ makes a sum of the values in list inputlist """
-        # TODO: validate that this actually works the way I think it does
-        if len(self.queue) == 0:
-            self.queue = [inputlist] * self.n
-            self.total = sum(self.queue)
-            self.numerator = inputlist * self.denominator
-
-        self.numerator += self.n * inputlist - self.total
-
-        self.total += inputlist - self.queue[0]
-
-        self.queue.append(inputlist)
-        self.queue = self.queue[-self.n:]
-
-        return self.numerator / self.denominator
-
 class SingleInverter(API):
     """ API implementation for an account with a single inverter """
     def __init__(self, system_id: str, account: str, password: str, skipload: bool = False):
@@ -298,17 +272,18 @@ class SingleInverter(API):
         # update the data
         super().getCurrentReadings(self, raw)
         # reduce self.data['inverter'] to a single dict from a list
+        retval = False
         if self.data.get('inverter'):
             self.data['inverter'] = self.data['inverter'][0]
         else:
             if retry < maxretries:
                 logging.error('no inverter data, try %s, trying again in %s seconds', retry, delay)
                 time.sleep(delay)
-                return self.getCurrentReadings(raw=raw, retry=retry+1, maxretries=maxretries, delay=delay)
+                retval = self.getCurrentReadings(raw=raw, retry=retry+1, maxretries=maxretries, delay=delay)
             else:
                 logging.error('No inverter data after %s retries, quitting.', retry)
                 sys.exit(f"No inverter data after {retry} retries, quitting.")
-        return False
+        return retval
 
     def get_station_location(self):
         if not self.data:

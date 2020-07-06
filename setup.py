@@ -1,15 +1,17 @@
+""" used for packaging this for pypi """
+
 import setuptools
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    LONG_DESCRIPTION = fh.read()
 
 setuptools.setup(
     name="pygoodwe",
-    version="0.0.13",
+    version="0.0.14",
     author="James Hodgkinson",
     author_email="yaleman@ricetek.net",
     description="Goodwe Python interface",
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/yaleman/pygoodwe",
     packages=setuptools.find_packages(),
