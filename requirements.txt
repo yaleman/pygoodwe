@@ -1,32 +1,5 @@
--i https://pypi.org/simple/
-attrs==19.3.0
-bleach==3.1.4
-certifi==2019.11.28
-cffi==1.14.0
+certifi==2020.6.20
 chardet==3.0.4
-cryptography==2.9.2
-docutils==0.16
 idna==2.9
-importlib-metadata==1.6.0 ; python_version < '3.8'
-jeepney==0.4.3 ; sys_platform == 'linux'
-keyring==21.2.0
-more-itertools==8.2.0
-packaging==20.3
-pkginfo==1.5.0.1
-pluggy==0.13.1
-py==1.8.1
-pycparser==2.20
-pygments==2.6.1
-pyparsing==2.4.6
-pytest==5.4.1
-readme-renderer==25.0
-requests-toolbelt==0.9.1
-requests==2.23.0
-secretstorage==3.1.2 ; sys_platform == 'linux'
-six==1.14.0
-tqdm==4.44.1
-twine==3.1.1
-urllib3==1.25.8
-wcwidth==0.1.9
-webencodings==0.5.1
-zipp==3.1.0
+requests==2.24.0
+urllib3==1.25.9
