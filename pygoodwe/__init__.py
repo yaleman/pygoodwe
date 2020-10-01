@@ -29,8 +29,10 @@ class API():
         self.global_url = api_url
         self.base_url = self.global_url
         if skipload:
+            logging.debug("Skipping initial load of data")
             self.data = 0
         else:
+            logging.debug("Doing load of data")
             self.getCurrentReadings(raw=True)
 
     def _loaddata(self, filename):
@@ -137,7 +139,7 @@ class API():
                 response = requests.post(self.base_url + url, headers=headers, data=payload, timeout=10)
                 response.raise_for_status()
                 data = response.json()
-                logging.debug(data)
+                logging.debug(f"call json: {json.dumps(data)}")
 
                 if data['msg'] == 'success' and data['data'] is not None: #pylint: disable=no-else-return
                     return data['data']
@@ -156,7 +158,7 @@ class API():
                     self.base_url = data['api']
                     self.token = json.dumps(data['data'])
             except requests.exceptions.RequestException as exp:
-                logging.warning(exp)
+                logging.warning(f"RequestException: {exp}")
             time.sleep(i ** 3)
 
         logging.error("Failed to call GoodWe API")
@@ -167,7 +169,7 @@ class API():
         try:
             return float(value.rstrip(unit))
         except ValueError as exp:
-            logging.warning(exp)
+            logging.warning(f"ValueError: {exp}")
             return 0
 
     def are_batteries_full(self, fullstate: float = 100.0):
