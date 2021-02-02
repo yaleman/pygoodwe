@@ -125,6 +125,36 @@ class API():
     #                 'eday_kwh': round(eday_kwh, 3)
     #             })
     #     return result
+    
+    def getDayDetailedReadingsExcel(self, date, **kwargs):
+        """ retrieves the detailed daily results of the given date as an Excel sheet,
+            processing the Excel sheet is outside the scope of the current module,
+            possible args:
+            - filename: the path where to write the output file, default "./Plant_Power_{datestr}.xls 
+        """
+        datestr = datetime.strftime(date, "%Y-%m-%d")
+        outputfile = kwargs.get("filename", f"'Plant_Power_{datestr}.xls")
+        payload = {
+            'date' : datestr,
+            'pw_id' : self.system_id,
+            # since the chart can't be included, use some fixed values that make the sheet look good without it
+            'img_width': 350,
+            'img_height': 20
+            }
+        self.data = self.call("v1/PowerStation/ExportPowerstationPac", payload)
+        
+        if self.data:
+            payload = {
+                'id' : self.data,
+            }
+            self.data = self.call("v1/ReportData/GetStationPowerDataFilePath", payload)
+        
+        if self.data and self.data.get("file_path") is not None:
+            r = requests.get(self.data.get("file_path"), allow_redirects=True)
+            open(outputfile, 'wb').write(r.content)
+            return True
+        
+        return False
 
     def call(self, url: str, payload: str, max_tries: int = 10): #pylint: disable=unused-argument
         # TODO: handle max_tries with retries
@@ -141,7 +171,8 @@ class API():
                 data = response.json()
                 logging.debug(f"call json: {json.dumps(data)}")
 
-                if data['msg'] == 'success' and data['data'] is not None: #pylint: disable=no-else-return
+                # Some APIs return "success", some "Success" in the 'msg'
+                if data.get('msg', "").lower() == 'success' and data.get('data'): #pylint: disable=no-else-return
                     return data['data']
                 else:
                     login_payload = {
