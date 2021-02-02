@@ -125,6 +125,31 @@ class API():
     #                 'eday_kwh': round(eday_kwh, 3)
     #             })
     #     return result
+    
+    def getDayDetailedReadingsExcel(self, date):
+        """ retrieves the detailed daily results of the given date as an Excel sheet
+            processing the Excel sheet is outside the scope of the current module """
+        datestr = datetime.strftime(date, "%Y-%m-%d")
+        payload = {
+            'date' : datestr,
+            'pw_id' : self.system_id,
+            'img_width': 1050,
+            'img_height': 268
+        }
+        self.data = self.call("v1/PowerStation/ExportPowerstationPac", payload)
+        
+        if self.data is not None:
+            payload = {
+                'id' : self.data,
+            }
+            self.data = self.call("v1/ReportData/GetStationPowerDataFilePath", payload)
+        
+        if self.data is not None and self.data["file_path"] is not None:
+            r = requests.get(self.data["file_path"], allow_redirects=True)
+            open('Plant_Power_%s.xls' % datestr, 'wb').write(r.content)
+            return True
+        
+        return False
 
     def call(self, url: str, payload: str, max_tries: int = 10): #pylint: disable=unused-argument
         # TODO: handle max_tries with retries
@@ -141,7 +166,8 @@ class API():
                 data = response.json()
                 logging.debug(f"call json: {json.dumps(data)}")
 
-                if data['msg'] == 'success' and data['data'] is not None: #pylint: disable=no-else-return
+                # Some APIs return "success", some "Success" in the 'msg'
+                if data['msg'].lower() == 'success' and data['data'] is not None: #pylint: disable=no-else-return
                     return data['data']
                 else:
                     login_payload = {

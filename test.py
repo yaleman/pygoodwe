@@ -3,6 +3,7 @@
 import json
 from config import args
 from pygoodwe import SingleInverter, API
+from datetime import date, timedelta
 
 print("Single Inverter")
 gw = SingleInverter(
@@ -44,3 +45,5 @@ if batterydata:
 
 # print(f"PV Flow: {gw.getPVFlow()}")
 # print(f"Voltage: {gw.getVoltage()}")
+
+# gw.getDayDetailedReadingsExcel(date.today() - timedelta(days=1))
