@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pygoodwe",
-    version="0.0.15",
+    version="0.0.16",
     author="James Hodgkinson",
     author_email="yaleman@ricetek.net",
     description="Goodwe Python interface",

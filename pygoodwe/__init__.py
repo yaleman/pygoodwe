@@ -16,19 +16,23 @@ API_URL = 'https://semsportal.com/api/'
 
 class API():
     """ API implementation """
-    def __init__(self, system_id: str, account: str, password: str, skipload: bool = False, api_url: str = API_URL):
+    def __init__(self, system_id: str, account: str, password: str, **kwargs):
         """
-        lang: Real Soon Now it'll filter out any responses without that language
+        Options:
+
+        #TODO: lang: Real Soon Now it'll filter out any responses without that language
         skipload: don't run self.getCurrentReadings() on init
         api_url: you can change the API endpoint it hits
         """
+
         self.system_id = system_id
         self.account = account
         self.password = password
         self.token = '{"version":"v2.0.4","client":"ios","language":"en"}'
-        self.global_url = api_url
+        self.global_url = kwargs.get('api_url', API_URL)
         self.base_url = self.global_url
-        if skipload:
+
+        if kwargs.get('skipload', False):
             logging.debug("Skipping initial load of data")
             self.data = 0
         else:
@@ -156,10 +160,48 @@ class API():
         
         return False
 
+    def getDayDetailedReadingsExcel(self, date, **kwargs): #pylint: disable=invalid-name
+        """ retrieves the detailed daily results of the given date as an Excel sheet,
+            processing the Excel sheet is outside the scope of the current module,
+            possible args:
+            - filename: the path where to write the output file, default "./Plant_Power_{datestr}.xls
+        """
+        datestr = datetime.strftime(date, "%Y-%m-%d")
+        outputfile = kwargs.get("filename", f"Plant_Power_{datestr}.xls")
+        payload = {
+            'date' : datestr,
+            'pw_id' : self.system_id,
+            # since the chart can't be included, use some fixed values that make the sheet look good without it
+            'img_width': 350,
+            'img_height': 20
+            }
+        # grab the ID of a file download with the export in it
+        download_id = self.call("v1/PowerStation/ExportPowerstationPac", payload)
+        if not download_id:
+            return False
+
+        payload = {
+            'id' : download_id,
+        }
+        file_data = self.call("v1/ReportData/GetStationPowerDataFilePath", payload)
+
+        if file_data and file_data.get("file_path") is not None:
+            try:
+                response = requests.get(file_data.get("file_path"), allow_redirects=True)
+                response.raise_for_status()
+            except Exception as error_message: #pylint: disable=broad-except
+                logging.error("Failed to query file download path: %s", error_message)
+            try:
+                open(outputfile, 'wb').write(response.content)
+                return True
+            except Exception as error_message: #pylint: disable=broad-except
+                logging.error("Failed to write file %s! Error: %s", outputfile, error_message)
+                return False
+        return False
+
     def call(self, url: str, payload: str, max_tries: int = 10): #pylint: disable=unused-argument
-        # TODO: handle max_tries with retries
         """ makes a call to the API """
-        for i in range(1, 4):
+        for i in range(1, max_tries):
             try:
                 headers = {
                     'User-Agent': 'PVMaster/2.0.4 (iPhone; iOS 11.4.1; Scale/2.00)',
@@ -169,11 +211,11 @@ class API():
                 response = requests.post(self.base_url + url, headers=headers, data=payload, timeout=10)
                 response.raise_for_status()
                 data = response.json()
-                logging.debug(f"call json: {json.dumps(data)}")
+                logging.debug("call response.json(): %s", json.dumps(data))
 
                 # Some APIs return "success", some "Success" in the 'msg'
                 if data.get('msg', "").lower() == 'success' and data.get('data'): #pylint: disable=no-else-return
-                    return data['data']
+                    return data.get('data')
                 else:
                     login_payload = {
                         'account': self.account,
@@ -186,10 +228,10 @@ class API():
                                              )
                     response.raise_for_status()
                     data = response.json()
-                    self.base_url = data['api']
-                    self.token = json.dumps(data['data'])
+                    self.base_url = data.get('api')
+                    self.token = json.dumps(data.get('data'))
             except requests.exceptions.RequestException as exp:
-                logging.warning(f"RequestException: {exp}")
+                logging.warning("RequestException: %s", exp)
             time.sleep(i ** 3)
 
         logging.error("Failed to call GoodWe API")
@@ -200,7 +242,7 @@ class API():
         try:
             return float(value.rstrip(unit))
         except ValueError as exp:
-            logging.warning(f"ValueError: {exp}")
+            logging.warning("ValueError: %s", exp)
             return 0
 
     def are_batteries_full(self, fullstate: float = 100.0):
@@ -220,23 +262,11 @@ class API():
         """
         if not self.data:
             self.getCurrentReadings()
-        return [float(inverter['invert_full']['soc']) for inverter in self.data['inverter']]
+        return [float(inverter.get('invert_full',{}).get('soc')) for inverter in self.data.get('inverter')]
 
     def get_batteries_soc(self):
         """ return the battery state of charge """
         return self._get_batteries_soc()
-
-    def _get_station_location(self):
-        """ returns the defined station location, a list of dicts of latitude/longitude"""
-        retval = [{
-            'latitude' : info['data']['latitude'],
-            'longitude' : info['data']['longitude'],
-        } for info in self.data['info']]
-        return retval
-
-    def get_station_location(self):
-        """ returns the defined station location, a list of dicts of latitude/longitude"""
-        return self._get_station_location()
 
     def getPVFlow(self): #pylint: disable=invalid-name
         """ PV flow data """
@@ -246,13 +276,13 @@ class API():
         """ returns the a list of the first AC channel voltages """
         if not self.data:
             self.getCurrentReadings(True)
-        return [float(inverter['invert_full']['vac1']) for inverter in self.data['inverter']]
+        return [float(inverter.get('invert_full',{}).get('vac1')) for inverter in self.data.get('inverter')]
 
     def getPmeter(self): #pylint: disable=invalid-name
         """ gets the current line pmeter """
         if not self.data:
             self.getCurrentReadings()
-        return float(self.data['inverter']['invert_full']['pmeter'])
+        return float(self.data.get('inverter',{}).get('invert_full',{}).get('pmeter'))
 
     def getLoadFlow(self): #pylint: disable=invalid-name
         """ returns the list of inverter multi-unit load watts """
@@ -262,7 +292,7 @@ class API():
         """ returns the list of inverter temperatures """
         if not self.data:
             self.get_current_readings(True)
-        return [float(inverter['invert_full']['tempperature']) for inverter in self.data['inverter']]
+        return [float(inverter.get('invert_full',{}).get('tempperature')) for inverter in self.data.get('inverter')]
 
     def getDataPvoutput(self): #pylint: disable=invalid-name
         """ updates and returns the data necessary for a one-shot pvoutput upload
@@ -276,7 +306,7 @@ class API():
         if not self.data:
             self.getCurrentReadings()
         #"time": "10/04/2019 14:37:29"
-        timestamp = datetime.strptime(self.data['info']['time'], '%m/%d/%Y %H:%M:%S')
+        timestamp = datetime.strptime(self.data.get('info',{}).get('time'), '%m/%d/%Y %H:%M:%S')
         data = {}
         data['d'] = timestamp.strftime("%Y%m%d") # date
         data['t'] = timestamp.strftime("%H:%M") # time
@@ -288,12 +318,12 @@ class API():
 
 class SingleInverter(API):
     """ API implementation for an account with a single inverter """
-    def __init__(self, system_id: str, account: str, password: str, skipload: bool = False):
+    def __init__(self, system_id: str, account: str, password: str, **kwargs):
         self.loadflow = 0
         self.loadflow_direction = None
 
         # instantiate the base class
-        super().__init__(system_id, account, password, skipload)
+        super().__init__(system_id, account, password, **kwargs)
 
     def loaddata(self, filename):
         self._loaddata(filename)
@@ -318,12 +348,17 @@ class SingleInverter(API):
                 sys.exit(f"No inverter data after {retry} retries, quitting.")
         return retval
 
+    def _get_station_location(self):
+        """ gets the identified lat and long from the station data """
+        return self.get_station_location()
+
     def get_station_location(self):
+        """ gets the identified lat and long from the station data """
         if not self.data:
             self.getCurrentReadings()
         return {
-            'latitude' : self.data['info']['latitude'],
-            'longitude' : self.data['info']['longitude']
+            'latitude' : self.data.get('info',{}).get('latitude'),
+            'longitude' : self.data.get('info',{}).get('longitude')
         }
 
     def getPVFlow(self):

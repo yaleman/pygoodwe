@@ -46,4 +46,5 @@ if batterydata:
 # print(f"PV Flow: {gw.getPVFlow()}")
 # print(f"Voltage: {gw.getVoltage()}")
 
-# gw.getDayDetailedReadingsExcel(date.today() - timedelta(days=1))
+print("Getting XLS file")
+gw.getDayDetailedReadingsExcel(date.today() - timedelta(days=1))

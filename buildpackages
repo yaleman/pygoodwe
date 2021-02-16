@@ -1,8 +1,0 @@
-#!/bin/bash
-
-if [ "$(basename "$(pwd)")" != "pygoodwe" ]; then
-    echo "This must be run from the pygoodwe directory"
-    exit 1
-fi
-rm dist/*
-pipenv run python setup.py sdist bdist_wheel
