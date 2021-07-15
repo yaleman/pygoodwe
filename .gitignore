@@ -29,3 +29,4 @@ test2.py
 .mypy_cache
 .scannerwork/*
 sonarqube-test.sh
+*.xls
