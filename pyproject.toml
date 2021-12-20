@@ -48,5 +48,10 @@ Home = "https://github.com/yaleman/pygoodwe"
 exclude = [
     "requirements*.txt",
     ".gitignore",
-    ".pylintrc"
+    ".pylintrc",
+    ".github",
+    ".travis.yml",
+    "Pipfile*",
+    "./.*",
 ]
+
