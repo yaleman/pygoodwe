@@ -30,3 +30,4 @@ test2.py
 .scannerwork/*
 sonarqube-test.sh
 *.xls
+venv/

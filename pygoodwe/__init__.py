@@ -8,6 +8,8 @@ import sys
 import time
 import requests
 
+__version__ = "0.0.17"
+
 POWERFLOW_STATUS_TEXT = {
     -1 : "Outward",
 }
@@ -129,12 +131,12 @@ class API():
     #                 'eday_kwh': round(eday_kwh, 3)
     #             })
     #     return result
-    
+
     def getDayDetailedReadingsExcel(self, date, **kwargs):
         """ retrieves the detailed daily results of the given date as an Excel sheet,
             processing the Excel sheet is outside the scope of the current module,
             possible args:
-            - filename: the path where to write the output file, default "./Plant_Power_{datestr}.xls 
+            - filename: the path where to write the output file, default "./Plant_Power_{datestr}.xls
         """
         datestr = datetime.strftime(date, "%Y-%m-%d")
         outputfile = kwargs.get("filename", f"'Plant_Power_{datestr}.xls")
@@ -146,18 +148,18 @@ class API():
             'img_height': 20
             }
         self.data = self.call("v1/PowerStation/ExportPowerstationPac", payload)
-        
+
         if self.data:
             payload = {
                 'id' : self.data,
             }
             self.data = self.call("v1/ReportData/GetStationPowerDataFilePath", payload)
-        
+
         if self.data and self.data.get("file_path") is not None:
             r = requests.get(self.data.get("file_path"), allow_redirects=True)
             open(outputfile, 'wb').write(r.content)
             return True
-        
+
         return False
 
     def getDayDetailedReadingsExcel(self, date, **kwargs): #pylint: disable=invalid-name

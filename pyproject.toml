@@ -1,0 +1,52 @@
+[build-system]
+requires = [
+    "flit_core >=3.2,<4"
+]
+build-backend = "flit_core.buildapi"
+
+[project]
+authors = [
+    {name = "James Hodgkinson", email = "yaleman@ricetek.net"}
+]
+classifiers = [
+        "Development Status :: 4 - Beta",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent"
+]
+dynamic = [
+    "version",
+    "description"
+]
+
+dependencies = [
+    "requests >=2.26.0"
+]
+
+keywords = [
+    "goodwe",
+    "solar",
+    "api",
+    "pygoodwe"
+]
+name = "pygoodwe"
+readme = "README.md"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pylint",
+    "flit"
+]
+
+[project.urls]
+Home = "https://github.com/yaleman/pygoodwe"
+
+
+[tool.flit.sdist]
+exclude = [
+    "requirements*.txt",
+    ".gitignore",
+    ".pylintrc"
+]
