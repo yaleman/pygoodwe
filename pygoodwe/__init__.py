@@ -1,6 +1,7 @@
 """ pygoodwe: a (terrible) interface to the goodwe solar API """
 
 
+from json.decoder import JSONDecodeError
 import os
 import json
 import logging
@@ -146,6 +147,15 @@ class API():
     #             })
     #     return result
 
+    @property
+    def headers(self):
+        """ request headers """
+        return {
+            'User-Agent': self.user_agent,
+            'Token': self.token,
+        }
+
+
     def getDayDetailedReadingsExcel(self, date, **kwargs): #pylint: disable=invalid-name
         """ retrieves the detailed daily results of the given date as an Excel sheet,
             processing the Excel sheet is outside the scope of the current module,
@@ -155,21 +165,47 @@ class API():
         datestr = datetime.strftime(date, "%Y-%m-%d")
         outputfile = kwargs.get("filename", f"Plant_Power_{datestr}.xls")
         logging.debug("Will write data for %s to file: %s", datestr, outputfile)
+
+        # {"api":"v1/PowerStation/ExportPowerstationPac","param":{"date":"2021-12-20","pw_id":"<my-pw-id>"
         payload = {
-            'date' : datestr,
-            'pw_id' : self.system_id,
-            # since the chart can't be included, use some fixed values that make the sheet look good without it
-            'img_width': 350,
-            'img_height': 20
+            "api" : "v1/PowerStation/ExportPowerstationPac",
+            "param" : {
+                'date' : datestr,
+                'pw_id' : self.system_id,
+                # since the chart can't be included, use some fixed values that make the sheet look good without it
+                "img_base64" : "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdj+P///38ACfsD/QVDRcoAAAAASUVORK5CYII=", # single pixel white png
+                'img_width': 1,
+                'img_height': 1,
+                "is_removesoc": 0,
+                }
             }
+        logging.error("payload: %s", payload)
         # grab the ID of a file download with the export in it
-        download_id = self.call("v1/PowerStation/ExportPowerstationPac",
-                                payload,
+        fixed_api_endpoint = self.base_url.replace("/api/", "/GopsApi/Post")
+        # full_url = f"{fixed_api_endpoint}"
+        response = requests.post(url=fixed_api_endpoint, #full_url,
+                                params={"s": "v1/PowerStation/ExportPowerstationPac" },
+                                headers=self.headers,
+                                data=payload,
                                 timeout=kwargs.get('timeout', 10),
-                                max_tries=kwargs.get('max_tries', 1),
+                                # max_tries=kwargs.get('max_tries', 3),
                                 )
+        response.raise_for_status()
+        # logging.error(response.content)
+        try:
+            data = response.json()
+        except JSONDecodeError:
+            logging.error("Failed to JSON decode result from %s:\n%s", fixed_api_endpoint, response.content)
+            return False
+        if not data.get("msg").lower in ("success", "successful"):
+            logging.error("Failed to pull from %s - response - %s", fixed_api_endpoint, data)
+            return False
+
+        download_id = data.get('data')
+        logging.error("Download ID: %s", download_id)
+
         if not download_id:
-            logging.error("Couldn't pull download ID by calling v1/PowerStation/ExportPowerstationPac")
+            logging.error("Couldn't pull download ID by calling %s", fixed_api_endpoint)
             logging.error(json.dumps(download_id))
             return False
 
@@ -203,13 +239,13 @@ class API():
             'account': self.account,
             'pwd': self.password,
         }
-        headers = {
-            'User-Agent': self.user_agent,
-            'Token': self.token,
-        }
+        # headers = {
+        #     'User-Agent': self.user_agent,
+        #     'Token': self.token,
+        # }
         try:
             response = requests.post(self.global_url + 'v1/Common/CrossLogin',
-                headers=headers,
+                headers=self.headers,
                 data=login_payload,
                 timeout=timeout,
             )
@@ -229,18 +265,20 @@ class API():
         """ makes a call to the API """
         for i in range(1, max_tries):
             try:
-                headers = {
-                    'User-Agent': self.user_agent,
-                    'Token': self.token,
-                    }
+                # headers = {
+                #     'User-Agent': self.user_agent,
+                #     'Token': self.token,
+                #     }
                 logging.debug("Pulling the following URL: base_url='%s', url='%s'", self.base_url, url)
-                response = requests.post(self.base_url + url, headers=headers, data=payload, timeout=timeout)
+                response = requests.post(self.base_url + url, headers=self.headers, data=payload, timeout=timeout)
                 response.raise_for_status()
                 data = response.json()
                 logging.debug("call response.json(): %s", json.dumps(data))
 
-                # Some APIs return "success", some "Success" in the 'msg'
-                if data.get('msg', "").lower() == 'success' and data.get('data'): #pylint: disable=no-else-return
+                # APIs return "success", "Success", "Successful" in the 'msg'
+                # seen "Successful" in ExportPowerStationPac
+                # logging.error("Msg result %s - %s", self.base_url + url, data.get('msg', ''))
+                if data.get('msg', "").lower() in ('success', "successful") and data.get('data'): #pylint: disable=no-else-return
                     logging.debug("Returning data: %s", json.dumps(data.get('data'), default=str))
                     return data.get('data')
                 else:
