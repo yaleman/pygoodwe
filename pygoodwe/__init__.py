@@ -63,7 +63,7 @@ class API:
 
     def _loaddata(self, filename):
         """ loads a json file of existing data """
-        with open(filename, "r") as filehandle:
+        with open(filename, "r", encoding="utf8") as filehandle:
             self.data = json.loads(filehandle.read())
         return True
 
