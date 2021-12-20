@@ -6,9 +6,10 @@ import logging
 import json
 from json.decoder import JSONDecodeError
 import os
-import requests
 import sys
 import time
+
+import requests
 
 __version__ = "0.0.17"
 
@@ -22,6 +23,7 @@ API_URL = "https://semsportal.com/api/"
 class API:
     """ API implementation """
 
+    #pylint: disable=too-many-instance-attributes
     def __init__(self, system_id: str, account: str, password: str, **kwargs):
         """
         Options:
@@ -72,9 +74,7 @@ class API:
     def get_current_readings(self, raw=True, retry=1, maxretries=5, delay=30):
         """this is an overlay function to help with migration
         to fixing the name of the below function"""
-        return self.getCurrentReadings(
-            self, raw=raw, retry=retry, maxretries=maxretries, delay=delay
-        )  # pylint: disable=redundant-keyword-arg
+        return self.getCurrentReadings(raw, retry, maxretries, delay)
 
     def getCurrentReadings(
         self, raw=True, retry=1, maxretries=5, delay=30
@@ -329,9 +329,7 @@ class API:
                         "Returning data: %s", json.dumps(data.get("data"), default=str)
                     )
                     return data.get("data")
-                else:
-                    logging.debug(json.dumps(data))
-                    pass
+                logging.debug(json.dumps(data))
 
                 logging.debug("Logging in again...")
                 if not self.do_login():

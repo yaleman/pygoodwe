@@ -35,5 +35,5 @@ jobs:
           args: |
             python3 -m pip install -r requirements.txt
             python3 -m pip install -r requirements-dev.txt
-            python3 -m pylint --rcfile=.pylintrc telegrab
+            python3 -m pylint --rcfile=.pylintrc pygoodwe
 
