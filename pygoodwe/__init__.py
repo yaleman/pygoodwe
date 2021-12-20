@@ -1,26 +1,27 @@
 """ pygoodwe: a (terrible) interface to the goodwe solar API """
 
 
+from datetime import datetime
+import logging
+import json
 from json.decoder import JSONDecodeError
 import os
-import json
-import logging
-from datetime import datetime
-# import argparse
+import requests
 import sys
 import time
-import requests
 
 __version__ = "0.0.17"
 
 POWERFLOW_STATUS_TEXT = {
-    -1 : "Outward",
+    -1: "Outward",
 }
 
-API_URL = 'https://semsportal.com/api/'
+API_URL = "https://semsportal.com/api/"
 
-class API():
+
+class API:
     """ API implementation """
+
     def __init__(self, system_id: str, account: str, password: str, **kwargs):
         """
         Options:
@@ -42,14 +43,16 @@ class API():
         self.account = account
         self.password = password
         self.token = '{"version":"v2.0.4","client":"ios","language":"en"}'
-        self.global_url = kwargs.get('api_url', API_URL)
+        self.global_url = kwargs.get("api_url", API_URL)
         self.base_url = self.global_url
 
         logging.debug("API URL: %s", self.base_url)
 
-        self.user_agent = kwargs.get("user_agent", "PVMaster/2.0.4 (iPhone; iOS 11.4.1; Scale/2.00)")
+        self.user_agent = kwargs.get(
+            "user_agent", "PVMaster/2.0.4 (iPhone; iOS 11.4.1; Scale/2.00)"
+        )
 
-        if kwargs.get('skipload', False):
+        if kwargs.get("skipload", False):
             logging.debug("Skipping initial load of data")
             self.data = 0
         else:
@@ -58,7 +61,7 @@ class API():
 
     def _loaddata(self, filename):
         """ loads a json file of existing data """
-        with open(filename, 'r') as filehandle:
+        with open(filename, "r") as filehandle:
             self.data = json.loads(filehandle.read())
         return True
 
@@ -67,28 +70,36 @@ class API():
         self._loaddata(filename)
 
     def get_current_readings(self, raw=True, retry=1, maxretries=5, delay=30):
-        """ this is an overlay function to help with migration
-            to fixing the name of the below function """
-        return self.getCurrentReadings(self, raw=raw, retry=retry, maxretries=maxretries, delay=delay) #pylint: disable=redundant-keyword-arg
+        """this is an overlay function to help with migration
+        to fixing the name of the below function"""
+        return self.getCurrentReadings(
+            self, raw=raw, retry=retry, maxretries=maxretries, delay=delay
+        )  # pylint: disable=redundant-keyword-arg
 
-    def getCurrentReadings(self, raw=True, retry=1, maxretries=5, delay=30): #pylint: disable=invalid-name
+    def getCurrentReadings(
+        self, raw=True, retry=1, maxretries=5, delay=30
+    ):  # pylint: disable=invalid-name
         """ gets readings at the current point in time """
-        payload = {
-            'powerStationId' : self.system_id
-        }
+        payload = {"powerStationId": self.system_id}
 
         # GOODWE server
-        self.data = self.call("v1/PowerStation/GetMonitorDetailByPowerstationId", payload)
+        self.data = self.call(
+            "v1/PowerStation/GetMonitorDetailByPowerstationId", payload
+        )
 
         retval = self.data
 
-        if not self.data.get('inverter'):
+        if not self.data.get("inverter"):
             if retry < maxretries:
-                logging.error('no inverter data, try %s, trying again in %s seconds', retry, delay)
+                logging.error(
+                    "no inverter data, try %s, trying again in %s seconds", retry, delay
+                )
                 time.sleep(delay)
-                retval = self.getCurrentReadings(raw=raw, retry=retry+1, maxretries=maxretries, delay=delay)
+                retval = self.getCurrentReadings(
+                    raw=raw, retry=retry + 1, maxretries=maxretries, delay=delay
+                )
             else:
-                logging.error('No inverter data after %s retries, quitting.', retry)
+                logging.error("No inverter data after %s retries, quitting.", retry)
                 sys.exit(f"No inverter data after {retry} retries, quitting.")
         return retval
 
@@ -151,16 +162,17 @@ class API():
     def headers(self):
         """ request headers """
         return {
-            'User-Agent': self.user_agent,
-            'Token': self.token,
+            "User-Agent": self.user_agent,
+            "Token": self.token,
         }
 
-
-    def getDayDetailedReadingsExcel(self, date, **kwargs): #pylint: disable=invalid-name
-        """ retrieves the detailed daily results of the given date as an Excel sheet,
-            processing the Excel sheet is outside the scope of the current module,
-            possible args:
-            - filename: the path where to write the output file, default "./Plant_Power_{datestr}.xls
+    def getDayDetailedReadingsExcel(
+        self, date, **kwargs
+    ):  # pylint: disable=invalid-name
+        """retrieves the detailed daily results of the given date as an Excel sheet,
+        processing the Excel sheet is outside the scope of the current module,
+        possible args:
+        - filename: the path where to write the output file, default "./Plant_Power_{datestr}.xls
         """
         datestr = datetime.strftime(date, "%Y-%m-%d")
         outputfile = kwargs.get("filename", f"Plant_Power_{datestr}.xls")
@@ -168,40 +180,47 @@ class API():
 
         # {"api":"v1/PowerStation/ExportPowerstationPac","param":{"date":"2021-12-20","pw_id":"<my-pw-id>"
         payload = {
-            "api" : "v1/PowerStation/ExportPowerstationPac",
-            "param" : {
-                'date' : datestr,
-                'pw_id' : self.system_id,
+            "api": "v1/PowerStation/ExportPowerstationPac",
+            "param": {
+                "date": datestr,
+                "pw_id": self.system_id,
                 # since the chart can't be included, use some fixed values that make the sheet look good without it
-                "img_base64" : "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdj+P///38ACfsD/QVDRcoAAAAASUVORK5CYII=", # single pixel white png
-                'img_width': 1,
-                'img_height': 1,
+                "img_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdj+P///38ACfsD/QVDRcoAAAAASUVORK5CYII=",  # single pixel white png
+                "img_width": 1,
+                "img_height": 1,
                 "is_removesoc": 0,
-                }
-            }
+            },
+        }
         logging.error("payload: %s", payload)
         # grab the ID of a file download with the export in it
         fixed_api_endpoint = self.base_url.replace("/api/", "/GopsApi/Post")
         # full_url = f"{fixed_api_endpoint}"
-        response = requests.post(url=fixed_api_endpoint, #full_url,
-                                params={"s": "v1/PowerStation/ExportPowerstationPac" },
-                                headers=self.headers,
-                                data=payload,
-                                timeout=kwargs.get('timeout', 10),
-                                # max_tries=kwargs.get('max_tries', 3),
-                                )
+        response = requests.post(
+            url=fixed_api_endpoint,  # full_url,
+            params={"s": "v1/PowerStation/ExportPowerstationPac"},
+            headers=self.headers,
+            data=payload,
+            timeout=kwargs.get("timeout", 10),
+            # max_tries=kwargs.get('max_tries', 3),
+        )
         response.raise_for_status()
         # logging.error(response.content)
         try:
             data = response.json()
         except JSONDecodeError:
-            logging.error("Failed to JSON decode result from %s:\n%s", fixed_api_endpoint, response.content)
+            logging.error(
+                "Failed to JSON decode result from %s:\n%s",
+                fixed_api_endpoint,
+                response.content,
+            )
             return False
         if not data.get("msg").lower in ("success", "successful"):
-            logging.error("Failed to pull from %s - response - %s", fixed_api_endpoint, data)
+            logging.error(
+                "Failed to pull from %s - response - %s", fixed_api_endpoint, data
+            )
             return False
 
-        download_id = data.get('data')
+        download_id = data.get("data")
         logging.error("Download ID: %s", download_id)
 
         if not download_id:
@@ -210,41 +229,52 @@ class API():
             return False
 
         download_payload = {
-            'id' : download_id,
+            "id": download_id,
         }
 
-        file_data = self.call("v1/ReportData/GetStationPowerDataFilePath", download_payload, timeout=kwargs.get('timeout', 10))
+        file_data = self.call(
+            "v1/ReportData/GetStationPowerDataFilePath",
+            download_payload,
+            timeout=kwargs.get("timeout", 10),
+        )
 
         if file_data and file_data.get("file_path") is not None:
             # this is where we actually download the file
             try:
-                response = requests.get(file_data.get("file_path"), allow_redirects=True, timeout=kwargs.get('timeout', 10))
+                response = requests.get(
+                    file_data.get("file_path"),
+                    allow_redirects=True,
+                    timeout=kwargs.get("timeout", 10),
+                )
                 response.raise_for_status()
-            except Exception as error_message: #pylint: disable=broad-except
+            except Exception as error_message:  # pylint: disable=broad-except
                 logging.error("Failed to query file download path: %s", error_message)
 
             # write the file to disk
             try:
-                with open(outputfile, 'wb') as file_handle:
+                with open(outputfile, "wb") as file_handle:
                     file_handle.write(response.content)
                 return True
-            except Exception as error_message: #pylint: disable=broad-except
-                logging.error("Failed to write file %s! Error: %s", outputfile, error_message)
+            except Exception as error_message:  # pylint: disable=broad-except
+                logging.error(
+                    "Failed to write file %s! Error: %s", outputfile, error_message
+                )
                 return False
         return False
 
-    def do_login(self, timeout: int=10):
+    def do_login(self, timeout: int = 10):
         """ does the login and token saving thing """
         login_payload = {
-            'account': self.account,
-            'pwd': self.password,
+            "account": self.account,
+            "pwd": self.password,
         }
         # headers = {
         #     'User-Agent': self.user_agent,
         #     'Token': self.token,
         # }
         try:
-            response = requests.post(self.global_url + 'v1/Common/CrossLogin',
+            response = requests.post(
+                self.global_url + "v1/Common/CrossLogin",
                 headers=self.headers,
                 data=login_payload,
                 timeout=timeout,
@@ -255,13 +285,15 @@ class API():
             return False
         data = response.json()
 
-        if data.get('api'):
-            logging.debug("Setting base url to %s", data.get('api'))
-            self.base_url = data.get('api')
-        self.token = json.dumps(data.get('data'))
+        if data.get("api"):
+            logging.debug("Setting base url to %s", data.get("api"))
+            self.base_url = data.get("api")
+        self.token = json.dumps(data.get("data"))
         return True
 
-    def call(self, url: str, payload: str, max_tries: int = 3, timeout=10): #pylint: disable=unused-argument
+    def call(
+        self, url: str, payload: str, max_tries: int = 3, timeout=10
+    ):  # pylint: disable=unused-argument
         """ makes a call to the API """
         for i in range(1, max_tries):
             try:
@@ -269,8 +301,17 @@ class API():
                 #     'User-Agent': self.user_agent,
                 #     'Token': self.token,
                 #     }
-                logging.debug("Pulling the following URL: base_url='%s', url='%s'", self.base_url, url)
-                response = requests.post(self.base_url + url, headers=self.headers, data=payload, timeout=timeout)
+                logging.debug(
+                    "Pulling the following URL: base_url='%s', url='%s'",
+                    self.base_url,
+                    url,
+                )
+                response = requests.post(
+                    self.base_url + url,
+                    headers=self.headers,
+                    data=payload,
+                    timeout=timeout,
+                )
                 response.raise_for_status()
                 data = response.json()
                 logging.debug("call response.json(): %s", json.dumps(data))
@@ -278,9 +319,16 @@ class API():
                 # APIs return "success", "Success", "Successful" in the 'msg'
                 # seen "Successful" in ExportPowerStationPac
                 # logging.error("Msg result %s - %s", self.base_url + url, data.get('msg', ''))
-                if data.get('msg', "").lower() in ('success', "successful") and data.get('data'): #pylint: disable=no-else-return
-                    logging.debug("Returning data: %s", json.dumps(data.get('data'), default=str))
-                    return data.get('data')
+                if data.get("msg", "").lower() in (
+                    "success",
+                    "successful",
+                ) and data.get(
+                    "data"
+                ):  # pylint: disable=no-else-return
+                    logging.debug(
+                        "Returning data: %s", json.dumps(data.get("data"), default=str)
+                    )
+                    return data.get("data")
                 else:
                     logging.debug(json.dumps(data))
                     pass
@@ -297,7 +345,7 @@ class API():
         logging.error("Failed to call GoodWe API url='%s'", self.base_url + url)
         return {}
 
-    def parseValue(self, value, unit): #pylint: disable=invalid-name, no-self-use
+    def parseValue(self, value, unit):  # pylint: disable=invalid-name, no-self-use
         """ takes a string value and reutrns it as a float (if possible) """
         try:
             return float(value.rstrip(unit))
@@ -306,45 +354,50 @@ class API():
             return 0
 
     def are_batteries_full(self, fullstate: float = 100.0):
-        """ boolean result for if the batteries are full. you can set your given 'full'
-            percentage in float if you want to lower this a little
-            are_batteries_full(fullstate=90.0): returns bool
+        """boolean result for if the batteries are full. you can set your given 'full'
+        percentage in float if you want to lower this a little
+        are_batteries_full(fullstate=90.0): returns bool
         """
         for battery in self.get_batteries_soc():
             if battery < fullstate:
                 return False
         return True
 
-
     def _get_batteries_soc(self):
-        """ returns a list of the state of charge for the batteries
+        """returns a list of the state of charge for the batteries
         returns: list[float,]
         """
         if not self.data:
             self.getCurrentReadings()
-        return [float(inverter.get('invert_full',{}).get('soc')) for inverter in self.data.get('inverter')]
+        return [
+            float(inverter.get("invert_full", {}).get("soc"))
+            for inverter in self.data.get("inverter")
+        ]
 
     def get_batteries_soc(self):
         """ return the battery state of charge """
         return self._get_batteries_soc()
 
-    def getPVFlow(self): #pylint: disable=invalid-name
+    def getPVFlow(self):  # pylint: disable=invalid-name
         """ PV flow data """
         raise NotImplementedError("SingleInverter has this, multi does not")
 
-    def getVoltage(self): #pylint: disable=invalid-name
+    def getVoltage(self):  # pylint: disable=invalid-name
         """ returns the a list of the first AC channel voltages """
         if not self.data:
             self.getCurrentReadings(True)
-        return [float(inverter.get('invert_full',{}).get('vac1')) for inverter in self.data.get('inverter')]
+        return [
+            float(inverter.get("invert_full", {}).get("vac1"))
+            for inverter in self.data.get("inverter")
+        ]
 
-    def getPmeter(self): #pylint: disable=invalid-name
+    def getPmeter(self):  # pylint: disable=invalid-name
         """ gets the current line pmeter """
         if not self.data:
             self.getCurrentReadings()
-        return float(self.data.get('inverter',{}).get('invert_full',{}).get('pmeter'))
+        return float(self.data.get("inverter", {}).get("invert_full", {}).get("pmeter"))
 
-    def getLoadFlow(self): #pylint: disable=invalid-name
+    def getLoadFlow(self):  # pylint: disable=invalid-name
         """ returns the list of inverter multi-unit load watts """
         raise NotImplementedError("multi-unit load watts isn't implemented yet")
 
@@ -352,32 +405,39 @@ class API():
         """ returns the list of inverter temperatures """
         if not self.data:
             self.get_current_readings(True)
-        return [float(inverter.get('invert_full',{}).get('tempperature')) for inverter in self.data.get('inverter')]
+        return [
+            float(inverter.get("invert_full", {}).get("tempperature"))
+            for inverter in self.data.get("inverter")
+        ]
 
-    def getDataPvoutput(self): #pylint: disable=invalid-name
-        """ updates and returns the data necessary for a one-shot pvoutput upload
-            'd' : testdate.strftime("%Y%m%d"),
-            't' : testtime.strftime("%H:%M"),
-            'v2' : 500, # power generation
-            'v4' : 450,
-            'v5' : 23.5, # temperature
-            'v6' : 234.0, # voltage
+    def getDataPvoutput(self):  # pylint: disable=invalid-name
+        """updates and returns the data necessary for a one-shot pvoutput upload
+        'd' : testdate.strftime("%Y%m%d"),
+        't' : testtime.strftime("%H:%M"),
+        'v2' : 500, # power generation
+        'v4' : 450,
+        'v5' : 23.5, # temperature
+        'v6' : 234.0, # voltage
         """
         if not self.data:
             self.getCurrentReadings()
-        #"time": "10/04/2019 14:37:29"
-        timestamp = datetime.strptime(self.data.get('info',{}).get('time'), '%m/%d/%Y %H:%M:%S')
+        # "time": "10/04/2019 14:37:29"
+        timestamp = datetime.strptime(
+            self.data.get("info", {}).get("time"), "%m/%d/%Y %H:%M:%S"
+        )
         data = {}
-        data['d'] = timestamp.strftime("%Y%m%d") # date
-        data['t'] = timestamp.strftime("%H:%M") # time
-        data['v2'] = self.getPVFlow() # PV Generation
-        data['v4'] = self.getLoadFlow() # power consumption
-        data['v5'] = self.get_inverter_temperature() # inverter temperature
-        data['v6'] = self.getVoltage() # voltage
+        data["d"] = timestamp.strftime("%Y%m%d")  # date
+        data["t"] = timestamp.strftime("%H:%M")  # time
+        data["v2"] = self.getPVFlow()  # PV Generation
+        data["v4"] = self.getLoadFlow()  # power consumption
+        data["v5"] = self.get_inverter_temperature()  # inverter temperature
+        data["v6"] = self.getVoltage()  # voltage
         return data
+
 
 class SingleInverter(API):
     """ API implementation for an account with a single inverter """
+
     def __init__(self, system_id: str, account: str, password: str, **kwargs):
         self.loadflow = 0
         self.loadflow_direction = None
@@ -387,8 +447,8 @@ class SingleInverter(API):
 
     def loaddata(self, filename):
         self._loaddata(filename)
-        if self.data.get('inverter'):
-            self.data['inverter'] = self.data['inverter'][0]
+        if self.data.get("inverter"):
+            self.data["inverter"] = self.data["inverter"][0]
 
     def getCurrentReadings(self, raw=True, retry=1, maxretries=5, delay=30):
         """ grabs the data and makes sure self.data only has a single inverter """
@@ -396,15 +456,19 @@ class SingleInverter(API):
         super().getCurrentReadings(self, raw)
         # reduce self.data['inverter'] to a single dict from a list
         retval = False
-        if self.data.get('inverter'):
-            self.data['inverter'] = self.data['inverter'][0]
+        if self.data.get("inverter"):
+            self.data["inverter"] = self.data["inverter"][0]
         else:
             if retry < maxretries:
-                logging.error('no inverter data, try %s, trying again in %s seconds', retry, delay)
+                logging.error(
+                    "no inverter data, try %s, trying again in %s seconds", retry, delay
+                )
                 time.sleep(delay)
-                retval = self.getCurrentReadings(raw=raw, retry=retry+1, maxretries=maxretries, delay=delay)
+                retval = self.getCurrentReadings(
+                    raw=raw, retry=retry + 1, maxretries=maxretries, delay=delay
+                )
             else:
-                logging.error('No inverter data after %s retries, quitting.', retry)
+                logging.error("No inverter data after %s retries, quitting.", retry)
                 sys.exit(f"No inverter data after {retry} retries, quitting.")
         return retval
 
@@ -417,55 +481,56 @@ class SingleInverter(API):
         if not self.data:
             self.getCurrentReadings()
         return {
-            'latitude' : self.data.get('info',{}).get('latitude'),
-            'longitude' : self.data.get('info',{}).get('longitude')
+            "latitude": self.data.get("info", {}).get("latitude"),
+            "longitude": self.data.get("info", {}).get("longitude"),
         }
 
     def getPVFlow(self):
         """ returns the current flow amount of the PV panels """
         if not self.data:
             self.getCurrentReadings()
-        if self.data['powerflow']['pv'].endswith('(W)'):
-            pvflow = self.data['powerflow']['pv'][:-3]
+        if self.data["powerflow"]["pv"].endswith("(W)"):
+            pvflow = self.data["powerflow"]["pv"][:-3]
         else:
-            pvflow = self.data['powerflow']['pv']
+            pvflow = self.data["powerflow"]["pv"]
         return float(pvflow)
 
     def getVoltage(self):
         """ gets the current line voltage """
         if not self.data:
             self.getCurrentReadings()
-        return float(self.data['inverter']['invert_full']['vac1'])
+        return float(self.data["inverter"]["invert_full"]["vac1"])
 
     def getLoadFlow(self):
         if not self.data:
             self.getCurrentReadings()
-        if self.data['powerflow']['bettery'].endswith('(W)'):
-            loadflow = float(self.data['powerflow']['load'][:-3])
+        if self.data["powerflow"]["bettery"].endswith("(W)"):
+            loadflow = float(self.data["powerflow"]["load"][:-3])
         else:
-            loadflow = float(self.data['powerflow']['load'])
+            loadflow = float(self.data["powerflow"]["load"])
         # I'd love to see the *house* generate power
-        if self.data['powerflow']['loadStatus'] == -1:
+        if self.data["powerflow"]["loadStatus"] == -1:
             loadflow_direction = "Importing"
-        elif self.data['powerflow']['loadStatus'] == 1:
+        elif self.data["powerflow"]["loadStatus"] == 1:
             loadflow_direction = "Using Battery"
         else:
-            raise ValueError(f"Your 'load' is doing something odd - status is '{self.data['powerflow']['loadStatus']}''.") #pylint: disable=line-too-long
+            raise ValueError(
+                f"Your 'load' is doing something odd - status is '{self.data['powerflow']['loadStatus']}''."
+            )  # pylint: disable=line-too-long
         self.loadflow = loadflow
         self.loadflow_direction = loadflow_direction
         return loadflow
 
     def _get_batteries_soc(self):
-        """ returns the state of charge of the battery
-        """
+        """returns the state of charge of the battery"""
         if not self.data:
             self.getCurrentReadings()
-        if not self.data.get('soc', False):
-            raise ValueError('No state of charge available from data')
-        return float(self.data['soc'].get('power'))
+        if not self.data.get("soc", False):
+            raise ValueError("No state of charge available from data")
+        return float(self.data["soc"].get("power"))
 
     def get_battery_soc(self):
-        """ returns the single value state of charge for the batteries in the plant
+        """returns the single value state of charge for the batteries in the plant
         returns : float
         """
         return self._get_batteries_soc()
@@ -473,4 +538,4 @@ class SingleInverter(API):
     def get_inverter_temperature(self):
         if not self.data:
             self.get_current_readings(True)
-        return float(self.data['inverter']['tempperature'])
+        return float(self.data["inverter"]["tempperature"])
