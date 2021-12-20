@@ -6,7 +6,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 authors = [
-    {name = "James Hodgkinson", email = "yaleman@ricetek.net"}
+    {name = "James Hodgkinson", email = "james@terminaloutcomes.com"}
 ]
 classifiers = [
         "Development Status :: 4 - Beta",
@@ -41,7 +41,9 @@ dev = [
 ]
 
 [project.urls]
-Home = "https://github.com/yaleman/pygoodwe"
+documentation = "https://github.com/yaleman/pygoodwe/blob/master/README.md"
+homepage = "https://github.com/yaleman/pygoodwe"
+repository = "https://github.com/yaleman/pygoodwe"
 
 
 [tool.flit.sdist]
@@ -53,5 +55,10 @@ exclude = [
     ".travis.yml",
     "Pipfile*",
     "./.*",
+    "test.*",
+    "test_pygoodwe.py",
+    "test*.json",
+    "upload*",
+
 ]
 

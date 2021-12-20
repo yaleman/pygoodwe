@@ -1,9 +1,11 @@
 """ pygoodwe: a (terrible) interface to the goodwe solar API """
 
+
+import os
 import json
 import logging
 from datetime import datetime
-import argparse
+# import argparse
 import sys
 import time
 import requests
@@ -27,12 +29,24 @@ class API():
         api_url: you can change the API endpoint it hits
         """
 
+        log_level = kwargs.get("log_level", os.getenv("LOG_LEVEL", "INFO"))
+
+        if log_level in ("DEBUG", "INFO", "WARNING"):
+            log_level = getattr(logging, os.getenv("LOG_LEVEL", "INFO"))
+            logging.basicConfig(
+                level=log_level,
+            )
+
         self.system_id = system_id
         self.account = account
         self.password = password
         self.token = '{"version":"v2.0.4","client":"ios","language":"en"}'
         self.global_url = kwargs.get('api_url', API_URL)
         self.base_url = self.global_url
+
+        logging.debug("API URL: %s", self.base_url)
+
+        self.user_agent = kwargs.get("user_agent", "PVMaster/2.0.4 (iPhone; iOS 11.4.1; Scale/2.00)")
 
         if kwargs.get('skipload', False):
             logging.debug("Skipping initial load of data")
@@ -132,36 +146,6 @@ class API():
     #             })
     #     return result
 
-    def getDayDetailedReadingsExcel(self, date, **kwargs):
-        """ retrieves the detailed daily results of the given date as an Excel sheet,
-            processing the Excel sheet is outside the scope of the current module,
-            possible args:
-            - filename: the path where to write the output file, default "./Plant_Power_{datestr}.xls
-        """
-        datestr = datetime.strftime(date, "%Y-%m-%d")
-        outputfile = kwargs.get("filename", f"'Plant_Power_{datestr}.xls")
-        payload = {
-            'date' : datestr,
-            'pw_id' : self.system_id,
-            # since the chart can't be included, use some fixed values that make the sheet look good without it
-            'img_width': 350,
-            'img_height': 20
-            }
-        self.data = self.call("v1/PowerStation/ExportPowerstationPac", payload)
-
-        if self.data:
-            payload = {
-                'id' : self.data,
-            }
-            self.data = self.call("v1/ReportData/GetStationPowerDataFilePath", payload)
-
-        if self.data and self.data.get("file_path") is not None:
-            r = requests.get(self.data.get("file_path"), allow_redirects=True)
-            open(outputfile, 'wb').write(r.content)
-            return True
-
-        return False
-
     def getDayDetailedReadingsExcel(self, date, **kwargs): #pylint: disable=invalid-name
         """ retrieves the detailed daily results of the given date as an Excel sheet,
             processing the Excel sheet is outside the scope of the current module,
@@ -170,6 +154,7 @@ class API():
         """
         datestr = datetime.strftime(date, "%Y-%m-%d")
         outputfile = kwargs.get("filename", f"Plant_Power_{datestr}.xls")
+        logging.debug("Will write data for %s to file: %s", datestr, outputfile)
         payload = {
             'date' : datestr,
             'pw_id' : self.system_id,
@@ -178,65 +163,100 @@ class API():
             'img_height': 20
             }
         # grab the ID of a file download with the export in it
-        download_id = self.call("v1/PowerStation/ExportPowerstationPac", payload)
+        download_id = self.call("v1/PowerStation/ExportPowerstationPac",
+                                payload,
+                                timeout=kwargs.get('timeout', 10),
+                                max_tries=kwargs.get('max_tries', 1),
+                                )
         if not download_id:
+            logging.error("Couldn't pull download ID by calling v1/PowerStation/ExportPowerstationPac")
+            logging.error(json.dumps(download_id))
             return False
 
-        payload = {
+        download_payload = {
             'id' : download_id,
         }
-        file_data = self.call("v1/ReportData/GetStationPowerDataFilePath", payload)
+
+        file_data = self.call("v1/ReportData/GetStationPowerDataFilePath", download_payload, timeout=kwargs.get('timeout', 10))
 
         if file_data and file_data.get("file_path") is not None:
+            # this is where we actually download the file
             try:
-                response = requests.get(file_data.get("file_path"), allow_redirects=True)
+                response = requests.get(file_data.get("file_path"), allow_redirects=True, timeout=kwargs.get('timeout', 10))
                 response.raise_for_status()
             except Exception as error_message: #pylint: disable=broad-except
                 logging.error("Failed to query file download path: %s", error_message)
+
+            # write the file to disk
             try:
-                open(outputfile, 'wb').write(response.content)
+                with open(outputfile, 'wb') as file_handle:
+                    file_handle.write(response.content)
                 return True
             except Exception as error_message: #pylint: disable=broad-except
                 logging.error("Failed to write file %s! Error: %s", outputfile, error_message)
                 return False
         return False
 
-    def call(self, url: str, payload: str, max_tries: int = 10): #pylint: disable=unused-argument
+    def do_login(self, timeout: int=10):
+        """ does the login and token saving thing """
+        login_payload = {
+            'account': self.account,
+            'pwd': self.password,
+        }
+        headers = {
+            'User-Agent': self.user_agent,
+            'Token': self.token,
+        }
+        try:
+            response = requests.post(self.global_url + 'v1/Common/CrossLogin',
+                headers=headers,
+                data=login_payload,
+                timeout=timeout,
+            )
+            response.raise_for_status()
+        except requests.exceptions.RequestException as exp:
+            logging.error("RequestException during do_login(): %s", exp)
+            return False
+        data = response.json()
+
+        if data.get('api'):
+            logging.debug("Setting base url to %s", data.get('api'))
+            self.base_url = data.get('api')
+        self.token = json.dumps(data.get('data'))
+        return True
+
+    def call(self, url: str, payload: str, max_tries: int = 3, timeout=10): #pylint: disable=unused-argument
         """ makes a call to the API """
         for i in range(1, max_tries):
             try:
                 headers = {
-                    'User-Agent': 'PVMaster/2.0.4 (iPhone; iOS 11.4.1; Scale/2.00)',
+                    'User-Agent': self.user_agent,
                     'Token': self.token,
                     }
-
-                response = requests.post(self.base_url + url, headers=headers, data=payload, timeout=10)
+                logging.debug("Pulling the following URL: base_url='%s', url='%s'", self.base_url, url)
+                response = requests.post(self.base_url + url, headers=headers, data=payload, timeout=timeout)
                 response.raise_for_status()
                 data = response.json()
                 logging.debug("call response.json(): %s", json.dumps(data))
 
                 # Some APIs return "success", some "Success" in the 'msg'
                 if data.get('msg', "").lower() == 'success' and data.get('data'): #pylint: disable=no-else-return
+                    logging.debug("Returning data: %s", json.dumps(data.get('data'), default=str))
                     return data.get('data')
                 else:
-                    login_payload = {
-                        'account': self.account,
-                        'pwd': self.password,
-                        }
-                    response = requests.post(self.global_url + 'v1/Common/CrossLogin',
-                                             headers=headers,
-                                             data=login_payload,
-                                             timeout=10,
-                                             )
-                    response.raise_for_status()
-                    data = response.json()
-                    self.base_url = data.get('api')
-                    self.token = json.dumps(data.get('data'))
-            except requests.exceptions.RequestException as exp:
-                logging.warning("RequestException: %s", exp)
-            time.sleep(i ** 3)
+                    logging.debug(json.dumps(data))
+                    pass
 
-        logging.error("Failed to call GoodWe API")
+                logging.debug("Logging in again...")
+                if not self.do_login():
+                    logging.error("Failed to log in, bailing")
+                    return {}
+            except requests.exceptions.RequestException as exp:
+                logging.error("RequestException: %s", exp)
+            logging.debug("Sleeping for %s seconds...", i)
+            time.sleep(i)
+
+        logging.error("Failed to call GoodWe API url='%s'", self.base_url + url)
         return {}
 
     def parseValue(self, value, unit): #pylint: disable=invalid-name, no-self-use
