@@ -10,6 +10,7 @@ import sys
 import time
 
 import requests
+from requests.sessions import Session
 
 __version__ = "0.0.17"
 
@@ -40,7 +41,7 @@ class API:
             logging.basicConfig(
                 level=log_level,
             )
-
+        self.session = Session()
         self.system_id = system_id
         self.account = account
         self.password = password
@@ -180,16 +181,18 @@ class API:
 
         # {"api":"v1/PowerStation/ExportPowerstationPac","param":{"date":"2021-12-20","pw_id":"<my-pw-id>"
         payload = {
-            "api": "v1/PowerStation/ExportPowerstationPac",
-            "param": {
-                "date": datestr,
-                "pw_id": self.system_id,
-                # since the chart can't be included, use some fixed values that make the sheet look good without it
-                "img_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdj+P///38ACfsD/QVDRcoAAAAASUVORK5CYII=",  # single pixel white png
-                "img_width": 1,
-                "img_height": 1,
-                "is_removesoc": 0,
-            },
+            "str" : json.dumps({
+                "api": "v1/PowerStation/ExportPowerstationPac",
+                "param": {
+                    "date": datestr,
+                    "pw_id": self.system_id,
+                    # since the chart can't be included, use some fixed values that make the sheet look good without it
+                    "img_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdj+P///38ACfsD/QVDRcoAAAAASUVORK5CYII=",  # single pixel white png
+                    "img_width": 1,
+                    "img_height": 1,
+                    "is_removesoc": 0,
+                }
+            })
         }
         logging.error("payload: %s", payload)
         # grab the ID of a file download with the export in it
@@ -269,7 +272,7 @@ class API:
             "pwd": self.password,
         }
         try:
-            response = requests.post(
+            response = self.session.post(
                 self.global_url + "v1/Common/CrossLogin",
                 headers=self.headers,
                 data=login_payload,
@@ -280,11 +283,12 @@ class API:
             logging.error("RequestException during do_login(): %s", exp)
             return False
         data = response.json()
-
+        logging.error(response.cookies)
         if data.get("api"):
             logging.debug("Setting base url to %s", data.get("api"))
             self.base_url = data.get("api")
         self.token = json.dumps(data.get("data"))
+        logging.error("Done login, token: %s", self.token)
         return True
 
     def call(
@@ -298,7 +302,7 @@ class API:
                     self.base_url,
                     url,
                 )
-                response = requests.post(
+                response = self.session.post(
                     self.base_url + url,
                     headers=self.headers,
                     data=payload,
