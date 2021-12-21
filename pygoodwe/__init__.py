@@ -268,10 +268,6 @@ class API:
             "account": self.account,
             "pwd": self.password,
         }
-        # headers = {
-        #     'User-Agent': self.user_agent,
-        #     'Token': self.token,
-        # }
         try:
             response = requests.post(
                 self.global_url + "v1/Common/CrossLogin",
@@ -297,10 +293,6 @@ class API:
         """ makes a call to the API """
         for i in range(1, max_tries):
             try:
-                # headers = {
-                #     'User-Agent': self.user_agent,
-                #     'Token': self.token,
-                #     }
                 logging.debug(
                     "Pulling the following URL: base_url='%s', url='%s'",
                     self.base_url,
