@@ -495,6 +495,30 @@ class SingleInverter(API):
             self.getCurrentReadings()
         return float(self.data["inverter"]["invert_full"]["vac1"])
 
+    def get_day_income(self):
+        """ gets the current daily income """
+        if not self.data:
+            self.getCurrentReadings()
+        return float(self.data['kpi']['day_income'])
+
+    def get_total_income(self):
+        """ gets the total income """
+        if not self.data:
+            self.getCurrentReadings()
+        return float(self.data['kpi']['total_income'])
+
+    def get_total_power(self):
+        """ gets the total power generated"""
+        if not self.data:
+            self.getCurrentReadings()
+        return float(self.data['kpi']['total_power'])
+
+    def get_day_power(self):
+        """ gets the total power generated"""
+        if not self.data:
+            self.getCurrentReadings()
+        return float(self.data['kpi']['power'])
+
     def getLoadFlow(self):
         if not self.data:
             self.getCurrentReadings()
