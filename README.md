@@ -43,3 +43,4 @@ GOODWE access is based on the undocumented API used by mobile apps. This could b
 * 0.0.13 2020-06-22 Added getPmeter from community submission, fixed a lot of pylint errors
 * 0.0.14 2020-07-06 Updated API endpoint due to cert expiry/change of API from 'https://globalapi.sems.com.cn/api/'' to 'https://semsportal.com/api/' as the old one was throwing expired cert errors.
 * 0.0.16 2021-02-04 Included option from Peter Verthez to download an Excel file of data, cleaned up some old code style mess.
+* 0.0.17 2022-06-04 Fully typed, if a little janky, replaced flit packaging with poetry.

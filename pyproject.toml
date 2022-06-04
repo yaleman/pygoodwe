@@ -1,13 +1,10 @@
-[build-system]
-requires = [
-    "flit_core >=3.2,<4"
-]
-build-backend = "flit_core.buildapi"
+[tool.poetry]
+name = "pygoodwe"
+version = "0.0.17"
+description = ""
+authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
+license = "MIT"
 
-[project]
-authors = [
-    {name = "James Hodgkinson", email = "james@terminaloutcomes.com"}
-]
 classifiers = [
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3",
@@ -15,30 +12,14 @@ classifiers = [
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent"
 ]
-dynamic = [
-    "version",
-    "description"
-]
-
-dependencies = [
-    "requests >=2.26.0"
-]
-
 keywords = [
     "goodwe",
     "solar",
     "api",
     "pygoodwe"
 ]
-name = "pygoodwe"
 readme = "README.md"
 
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "pylint",
-    "flit"
-]
 
 [project.urls]
 documentation = "https://github.com/yaleman/pygoodwe/blob/master/README.md"
@@ -46,19 +27,23 @@ homepage = "https://github.com/yaleman/pygoodwe"
 repository = "https://github.com/yaleman/pygoodwe"
 
 
-[tool.flit.sdist]
-exclude = [
-    "requirements*.txt",
-    ".gitignore",
-    ".pylintrc",
-    ".github",
-    ".travis.yml",
-    "Pipfile*",
-    "./.*",
-    "test.*",
-    "test_pygoodwe.py",
-    "test*.json",
-    "upload*",
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.27.1"
 
-]
+[tool.poetry.dev-dependencies]
+types-requests = "^2.27.30"
+pylint = "^2.14.0"
+pytest = "^7.1.2"
+mypy = "^0.960"
+black = "^22.3.0"
+pylint-pytest = "^1.1.2"
 
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.MASTER]
+disable="W0511"
+max-line-length=150
+load-plugins="pylint_pytest"
