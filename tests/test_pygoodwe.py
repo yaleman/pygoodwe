@@ -31,14 +31,13 @@ if os.getenv("LOG_LEVEL", "INFO") in ("DEBUG", "INFO", "WARNING"):
 #print(data['info'].keys())
 #print(json.dumps(data['info'], indent=2))
 
-
 @pytest.fixture(scope="session")
 def inverter() -> SingleInverter:
     """ used to start up the class """
     if os.environ.get("GOODWE_USE_CONFIG", False):
         #pylint: disable=import-outside-toplevel
         try:
-            from config import args
+            from config import args #type: ignore
         except ImportError:
             pytest.skip("Couldn't find config.py")
         logging.info("Using config from config.py")
