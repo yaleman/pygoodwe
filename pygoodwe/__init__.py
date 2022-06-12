@@ -25,7 +25,7 @@ API_URL = "https://semsportal.com/api/"
 class API():
     """ API implementation """
 
-    #pylint: disable=too-many-instance-attributes
+    #pylint: disable=too-many-instance-attributes,too-many-arguments
     def __init__(
         self,
         system_id: str,
@@ -458,7 +458,7 @@ class API():
 
 class SingleInverter(API):
     """ API implementation for an account with a single inverter """
-
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         system_id: str,
