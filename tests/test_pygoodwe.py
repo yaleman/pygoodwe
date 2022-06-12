@@ -54,6 +54,8 @@ def inverter() -> SingleInverter:
                             )
     else:
         logging.info("Using cached result for tests...")
+        if not os.path.exists('testdata.json'):
+            pytest.skip("Could not find data file 'testdata.json'")
         goodweinverter = SingleInverter("","","", skipload=True)
         goodweinverter.loaddata('testdata.json')
 
