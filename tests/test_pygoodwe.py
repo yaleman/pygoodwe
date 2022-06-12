@@ -37,7 +37,10 @@ def inverter() -> SingleInverter:
     """ used to start up the class """
     if os.environ.get("GOODWE_USE_CONFIG", False):
         #pylint: disable=import-outside-toplevel
-        from config import args
+        try:
+            from config import args
+        except ImportError:
+            pytest.skip("Couldn't find config.py")
         logging.info("Using config from config.py")
 
         goodweinverter = SingleInverter(
