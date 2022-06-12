@@ -18,7 +18,7 @@ __version__ = "0.0.17"
 POWERFLOW_STATUS_TEXT = {
     -1: "Outward",
 }
-
+DEFAULT_UA = "PVMaster/2.0.4 (iPhone; iOS 11.4.1; Scale/2.00)"
 API_URL = "https://semsportal.com/api/"
 
 
@@ -33,7 +33,7 @@ class API():
         password: str,
         api_url: str=API_URL,
         log_level: Optional[str]=None,
-        user_agent: str="PVMaster/2.0.4 (iPhone; iOS 11.4.1; Scale/2.00)",
+        user_agent: str=DEFAULT_UA,
         skipload: bool=False,
     ) -> None:
         """
@@ -466,7 +466,7 @@ class SingleInverter(API):
         password: str,
         api_url: str=API_URL,
         log_level: Optional[str]=None,
-        user_agent: str="PVMaster/2.0.4 (iPhone; iOS 11.4.1; Scale/2.00)",
+        user_agent: str=DEFAULT_UA,
         skipload: bool=False,
         ) -> None:
         self.loadflow = 0.0
