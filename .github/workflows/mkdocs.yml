@@ -1,0 +1,25 @@
+name: MKDocs Deployment to GitHub Pages
+
+"on":
+  push:
+    branches:
+      - main  # Set a branch to deploy
+
+jobs:
+  mkdocs:
+    name: Deploy docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Running mkdocs
+        run: |
+          python -m pip install --quiet --no-cache-dir --upgrade poetry
+          poetry install
+          poetry run mkdocs gh-deploy -m 'Commit {sha} MkDocs {version}'

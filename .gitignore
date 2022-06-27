@@ -31,3 +31,8 @@ test2.py
 sonarqube-test.sh
 *.xls
 venv/
+**/__pycache__/*
+.vscode/
+*.egg-info/
+.env
+build/

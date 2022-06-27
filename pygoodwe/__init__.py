@@ -39,10 +39,10 @@ class API():
         """
         Options:
 
-        #TODO: lang: Real Soon Now it'll filter out any responses without that language
         skipload: don't run self.getCurrentReadings() on init
         api_url: you can change the API endpoint it hits
         """
+        #TODO: lang: Real Soon Now it'll filter out any responses without that language
 
         if log_level is None:
             if "LOG_LEVEL" in os.environ:
