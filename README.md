@@ -3,6 +3,10 @@
 
 A command line tool and python library to query the GOODWE SEMS Portal APIs.
 
+## API Docs
+
+Auto-generated documentation is here: https://yaleman.github.io/pygoodwe/
+
 ## Installation
 
 You need to have Python 3 and pip installed. Then:

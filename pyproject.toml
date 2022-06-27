@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pygoodwe"
-version = "0.0.17"
+version = "0.0.18"
 description = ""
 authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
 license = "MIT"
@@ -22,7 +22,7 @@ readme = "README.md"
 
 
 [project.urls]
-documentation = "https://github.com/yaleman/pygoodwe/blob/master/README.md"
+documentation = "https://yaleman.github.io/pygoodwe/"
 homepage = "https://github.com/yaleman/pygoodwe"
 repository = "https://github.com/yaleman/pygoodwe"
 
