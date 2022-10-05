@@ -15,3 +15,4 @@
 * 0.0.16 2021-02-04 Included option from Peter Verthez to download an Excel file of data, cleaned up some old code style mess.
 * 0.0.17 2022-06-04 Fully typed, if a little janky, replaced flit packaging with poetry.
 * 0.0.18 2022-06-28 Added mkdocs automagical documentation, bumped version to update details on pypi.
+* 0.1.0 2022-10-05 Fixed issue with getDataPvoutput on SingleInverters. (#148)
