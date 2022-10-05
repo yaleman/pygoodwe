@@ -37,7 +37,7 @@ def inverter() -> SingleInverter:
     if os.environ.get("GOODWE_USE_CONFIG", False):
         #pylint: disable=import-outside-toplevel
         try:
-            from config import args #type: ignore
+            from config import args
         except ImportError:
             pytest.skip("Couldn't find config.py")
         logging.info("Using config from config.py")
@@ -72,8 +72,10 @@ def test_instantiate(inverter: SingleInverter) -> None:
     assert "info" in inverter.data
     print(inverter.data)
 
-def test_getDataPvoutput(inverter: SingleInverter) -> None:
+def test_get_data_pvoutput(inverter: SingleInverter) -> None:
+    """ tests that getDataPvoutput works """
     print(inverter.getDataPvoutput())
+
 #print(gw.data['info'])
 #print(gw.get_station_location())
 
