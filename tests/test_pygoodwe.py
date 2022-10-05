@@ -70,6 +70,10 @@ def test_instantiate(inverter: SingleInverter) -> None:
     """ tests just setting up and pulling data """
     assert inverter.data['info'].keys()
     assert "info" in inverter.data
+    print(inverter.data)
+
+def test_getDataPvoutput(inverter: SingleInverter) -> None:
+    print(inverter.getDataPvoutput())
 #print(gw.data['info'])
 #print(gw.get_station_location())
 

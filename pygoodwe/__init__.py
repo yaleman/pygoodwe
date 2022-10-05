@@ -112,6 +112,7 @@ class API():
                 sys.exit(f"No inverter data after {retry} retries, quitting.")
         return retval
 
+    # stub function names to old names
     getCurrentReadings = get_current_readings
 
     # def getDayReadings(self, date):
@@ -603,3 +604,29 @@ class SingleInverter(API):
         if not self.data:
             self.get_current_readings(True)
         return float(self.data["inverter"]["tempperature"])
+
+    def getDataPvoutput(
+        self
+        ) -> Dict[str, Union[str, float]]:  # pylint: disable=invalid-name
+        """updates and returns the data necessary for a one-shot pvoutput upload
+        'd' : testdate.strftime("%Y%m%d"),
+        't' : testtime.strftime("%H:%M"),
+        'v2' : 500, # power generation
+        'v4' : 450,
+        'v5' : 23.5, # temperature
+        'v6' : 234.0, # voltage
+        """
+        if not self.data:
+            self.getCurrentReadings()
+        # "time": "10/04/2019 14:37:29"
+        timestamp = datetime.strptime(
+            self.data.get("info", {}).get("time"), "%m/%d/%Y %H:%M:%S"
+        )
+        data: Dict[str, Union[str, float]] = {}
+        data["d"] = timestamp.strftime("%Y%m%d")  # date
+        data["t"] = timestamp.strftime("%H:%M")  # time
+        data["v2"] = self.getPVFlow()  # PV Generation
+        data["v4"] = self.getLoadFlow()  # power consumption
+        data["v5"] = self.get_inverter_temperature()  # inverter temperature
+        data["v6"] = self.getVoltage()  # voltage
+        return data
