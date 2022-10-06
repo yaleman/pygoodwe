@@ -19,7 +19,7 @@ jobs:
           python-version: '3.9'
       - name: Running mypy
         run: |
-          touch config.py
+          echo 'args = {}' > config.py
           python --version
           python -m pip install --quiet --no-cache-dir --upgrade poetry
           poetry install
