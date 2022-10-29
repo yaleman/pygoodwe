@@ -179,7 +179,7 @@ def test_getDayDetailedReadingsExcel(
     tmpdir_factory: pytest.TempdirFactory,
     ) -> None:
     """ test downloading xls data """
-    filename = tmpdir_factory.mktemp("data").join("data.xls")
+    filename = tmpdir_factory.mktemp("data").join("data.xls") # type: ignore
     if os.environ.get("GOODWE_USE_CONFIG", False):
         yesterday = date.today() - timedelta(days=1)
         # yesterday_str = yesterday.strftime("%Y-%m-%d")
