@@ -104,12 +104,11 @@ class API():
                     "no inverter data, try %s, trying again in %s seconds", retry, delay
                 )
                 time.sleep(delay)
-                retval = self.getCurrentReadings(
+                return self.getCurrentReadings(
                     raw=raw, retry=retry + 1, maxretries=maxretries, delay=delay
                 )
-            else:
-                logging.error("No inverter data after %s retries, quitting.", retry)
-                sys.exit(f"No inverter data after {retry} retries, quitting.")
+            logging.error("No inverter data after %s retries, quitting.", retry)
+            sys.exit(f"No inverter data after {retry} retries, quitting.")
         return retval
 
     # stub function names to old names
@@ -495,7 +494,7 @@ class SingleInverter(API):
         # update the data
         super().get_current_readings(raw)
         # reduce self.data['inverter'] to a single dict from a list
-        retval = False
+        retval = None
         if self.data.get("inverter"):
             self.data["inverter"] = self.data["inverter"][0]
         else:
@@ -504,12 +503,11 @@ class SingleInverter(API):
                     "no inverter data, try %s, trying again in %s seconds", retry, delay
                 )
                 time.sleep(delay)
-                retval = self.get_current_readings(
+                return self.get_current_readings(
                     raw=raw, retry=retry + 1, maxretries=maxretries, delay=delay
                 )
-            else:
-                logging.error("No inverter data after %s retries, quitting.", retry)
-                sys.exit(f"No inverter data after {retry} retries, quitting.")
+            logging.error("No inverter data after %s retries, quitting.", retry)
+            sys.exit(f"No inverter data after {retry} retries, quitting.")
         return retval
     getCurrentReadings = get_current_readings
 

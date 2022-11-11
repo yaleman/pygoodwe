@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pygoodwe"
-version = "0.1.0"
+version = "0.1.1"
 description = "A command line tool and python library to query the GOODWE SEMS Portal APIs."
 authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
 license = "MIT"
