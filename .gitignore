@@ -36,3 +36,4 @@ venv/
 *.egg-info/
 .env
 build/
+poetry.lock
