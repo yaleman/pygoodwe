@@ -93,7 +93,7 @@ class API():
 
         # GOODWE server
         self.data = self.call(
-            "v1/PowerStation/GetMonitorDetailByPowerstationId", payload
+            "v2/PowerStation/GetMonitorDetailByPowerstationId", payload
         )
 
         retval = self.data
@@ -119,7 +119,7 @@ class API():
     #     payload = {
     #         'powerStationId' : self.system_id
     #     }
-    #     data = self.call("v1/PowerStation/GetMonitorDetailByPowerstationId", payload)
+    #     data = self.call("v2/PowerStation/GetMonitorDetailByPowerstationId", payload)
     #     if 'info' not in data:
     #     logging.warning(date_s + " - Received bad data " + str(data))
     #         return result
@@ -194,10 +194,10 @@ class API():
             filename = f"Plant_Power_{datestr}.xls"
         logging.debug("Will write data for %s to file: %s", datestr, filename)
 
-        # {"api":"v1/PowerStation/ExportPowerstationPac","param":{"date":"2021-12-20","pw_id":"<my-pw-id>"
+        # {"api":"v2/PowerStation/ExportPowerstationPac","param":{"date":"2021-12-20","pw_id":"<my-pw-id>"
         payload = {
             "str" : json.dumps({
-                "api": "v1/PowerStation/ExportPowerstationPac",
+                "api": "v2/PowerStation/ExportPowerstationPac",
                 "param": {
                     "date": datestr,
                     "pw_id": self.system_id,
@@ -216,7 +216,7 @@ class API():
         # full_url = f"{fixed_api_endpoint}"
         response = requests.post(
             url=fixed_api_endpoint,  # full_url,
-            params={"s": "v1/PowerStation/ExportPowerstationPac"},
+            params={"s": "v2/PowerStation/ExportPowerstationPac"},
             headers=self.headers,
             data=payload,
             timeout=timeout,
@@ -251,7 +251,7 @@ class API():
         }
 
         file_data = self.call(
-            "v1/ReportData/GetStationPowerDataFilePath",
+            "v2/ReportData/GetStationPowerDataFilePath",
             download_payload,
             timeout=timeout,
         )
@@ -288,7 +288,7 @@ class API():
         }
         try:
             response = self.session.post(
-                self.global_url + "v1/Common/CrossLogin",
+                self.global_url + "v2/Common/CrossLogin",
                 headers=self.headers,
                 data=login_payload,
                 timeout=timeout,
