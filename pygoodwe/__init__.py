@@ -298,12 +298,12 @@ class API():
             logging.error("RequestException during do_login(): %s", exp)
             return False
         data = response.json()
-        logging.error(response.cookies)
+        # logging.error(response.cookies)
         if data.get("api"):
             logging.debug("Setting base url to %s", data.get("api"))
             self.base_url = data.get("api")
         self.token = json.dumps(data.get("data"))
-        logging.error("Done login, token: %s", self.token)
+        logging.debug("Done login, token: %s", self.token)
         return True
 
     def call(

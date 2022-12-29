@@ -42,12 +42,12 @@ def test_get_temperature():
 #print(f"Current SOC: {gw.get_battery_soc()}")
 
 inverter = get_single_inverter()
-print(inverter.data.keys())
+print(f"Available fields in data: {inverter.data.keys()}")
 print(json.dumps(inverter.data.get('inverter').get('battery'), indent=2))
 batterydata = inverter.data.get('inverter',{}).get('battery',"").split("/")
 if batterydata:
         voltage = float(batterydata[0][:-1])
-        print("Battery voltage is: {}".format(voltage))
+        print(f"Battery voltage is: {voltage}")
 #print(json.dumps(gw.data))
 #print(f"Are the batteries full? {gw.are_batteries_full(fullstate=90.0)}")
 
@@ -58,5 +58,5 @@ if batterydata:
 # print(f"PV Flow: {gw.getPVFlow()}")
 # print(f"Voltage: {gw.getVoltage()}")
 
-print("Getting XLS file")
-inverter.getDayDetailedReadingsExcel(date.today() - timedelta(days=1))
+# print("Getting XLS file - this doesn't work!")
+# inverter.getDayDetailedReadingsExcel(date.today() - timedelta(days=1))
