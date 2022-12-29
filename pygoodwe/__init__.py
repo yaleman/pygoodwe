@@ -6,6 +6,7 @@ import json
 from json.decoder import JSONDecodeError
 import logging
 import os
+from pathlib import Path
 import sys
 import time
 from typing import Any, Dict, List, Optional, Union
@@ -184,7 +185,7 @@ class API():
         timeout: int=10,
         filename: Optional[str]=None,
     ) -> bool:
-        """retrieves the detailed daily results of the given date as an Excel sheet,
+        """ retrieves the detailed daily results of the given date as an Excel sheet,
         processing the Excel sheet is outside the scope of the current module,
         possible args:
         - filename: the path where to write the output file, default "./Plant_Power_{datestr}.xls
@@ -194,91 +195,42 @@ class API():
             filename = f"Plant_Power_{datestr}.xls"
         logging.debug("Will write data for %s to file: %s", datestr, filename)
 
+        uri = "v1/PowerStation/ExportPowerstationPac"
         # {"api":"v2/PowerStation/ExportPowerstationPac","param":{"date":"2021-12-20","pw_id":"<my-pw-id>"
-        payload = {
-            "str" : json.dumps({
-                "api": "v2/PowerStation/ExportPowerstationPac",
-                "param": {
-                    "date": datestr,
-                    "pw_id": self.system_id,
-                    # since the chart can't be included, use some fixed values that make the sheet look good without it
-                    # single pixel white png
-                    "img_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdj+P///38ACfsD/QVDRcoAAAAASUVORK5CYII=", #pylint: disable=line-too-long
-                    "img_width": 1,
-                    "img_height": 1,
-                    "is_removesoc": 0,
-                }
-            })
+        payload_export = {
+            "date": datestr,
+            "pw_id": self.system_id,
         }
-        logging.error("payload: %s", payload)
-        # grab the ID of a file download with the export in it
-        fixed_api_endpoint = self.base_url.replace("/api/", "/GopsApi/Post")
-        # full_url = f"{fixed_api_endpoint}"
-        response = requests.post(
-            url=fixed_api_endpoint,  # full_url,
-            params={"s": "v2/PowerStation/ExportPowerstationPac"},
-            headers=self.headers,
-            data=payload,
-            timeout=timeout,
+
+        data = self.call(uri, payload=payload_export)
+
+
+        payload_get_url = {
+            "id": data
+        }
+        get_url_uri = "v1/ReportData/GetStationPowerDataFilePath"
+        data = self.call(
+            get_url_uri, payload=payload_get_url
         )
+
+        file_url = data.get("file_path")
+        if file_url is None:
+            logging.error("Failed to get file path from ")
+            return False
+
+        response = requests.get(file_url, timeout=timeout)
         response.raise_for_status()
-        # logging.error(response.content)
+
         try:
-            data = response.json()
-        except JSONDecodeError:
+            file_download_path = Path(filename)
+            file_download_path.write_bytes(response.content)
+        except Exception as error_message:  # pylint: disable=broad-except
             logging.error(
-                "Failed to JSON decode result from %s:\n%s",
-                fixed_api_endpoint,
-                response.content,
+                "Failed to write file %s! Error: %s", filename, error_message
             )
             return False
-        if not data.get("msg").lower in ("success", "successful"):
-            logging.error(
-                "Failed to pull from %s - response - %s", fixed_api_endpoint, data
-            )
-            return False
+        return True
 
-        download_id = data.get("data")
-        logging.error("Download ID: %s", download_id)
-
-        if not download_id:
-            logging.error("Couldn't pull download ID by calling %s", fixed_api_endpoint)
-            logging.error(json.dumps(download_id))
-            return False
-
-        download_payload = {
-            "id": download_id,
-        }
-
-        file_data = self.call(
-            "v2/ReportData/GetStationPowerDataFilePath",
-            download_payload,
-            timeout=timeout,
-        )
-
-        if file_data and "file_path" in file_data:
-            # this is where we actually download the file
-            try:
-                response = requests.get(
-                    file_data["file_path"],
-                    allow_redirects=True,
-                    timeout=timeout,
-                )
-                response.raise_for_status()
-            except Exception as error_message:  # pylint: disable=broad-except
-                logging.error("Failed to query file download path: %s", error_message)
-
-            # write the file to disk
-            try:
-                with open(filename, "wb") as file_handle:
-                    file_handle.write(response.content)
-                return True
-            except Exception as error_message:  # pylint: disable=broad-except
-                logging.error(
-                    "Failed to write file %s! Error: %s", filename, error_message
-                )
-                return False
-        return False
 
     def do_login(self, timeout: int = 10) -> bool:
         """ does the login and token saving thing """
