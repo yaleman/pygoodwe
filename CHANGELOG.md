@@ -18,3 +18,4 @@
 * 0.1.0 2022-10-05 Fixed issue with getDataPvoutput on SingleInverters. (#148)
 * 0.1.2 2022-12-19 Updating SEMS API Endpoints to V2.
 * 0.1.3 2022-12-29 Removed an extra error message.
+* 0.1.4 2022-12-30 XLS Export fixes
