@@ -16,3 +16,5 @@
 * 0.0.17 2022-06-04 Fully typed, if a little janky, replaced flit packaging with poetry.
 * 0.0.18 2022-06-28 Added mkdocs automagical documentation, bumped version to update details on pypi.
 * 0.1.0 2022-10-05 Fixed issue with getDataPvoutput on SingleInverters. (#148)
+* 0.1.2 2022-12-19 Updating SEMS API Endpoints to V2.
+* 0.1.3 2022-12-29 Removed an extra error message.
