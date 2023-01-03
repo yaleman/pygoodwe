@@ -19,3 +19,4 @@
 * 0.1.2 2022-12-19 Updating SEMS API Endpoints to V2.
 * 0.1.3 2022-12-29 Removed an extra error message.
 * 0.1.4 2022-12-30 XLS Export fixes
+* 0.1.5 2023-01-04 Fixes for get_current_readings to pass settings down properly, and do less double-error-handling.
