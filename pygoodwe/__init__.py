@@ -105,7 +105,7 @@ class API():
                     "no inverter data, try %s, trying again in %s seconds", retry, delay
                 )
                 time.sleep(delay)
-                return self.getCurrentReadings(
+                return self.get_current_readings(
                     raw=raw, retry=retry + 1, maxretries=maxretries, delay=delay
                 )
             logging.error("No inverter data after %s retries, quitting.", retry)
@@ -443,24 +443,16 @@ class SingleInverter(API):
         delay: int=30,
         ) -> Any:
         """ grabs the data and makes sure self.data only has a single inverter """
+
         # update the data
-        super().get_current_readings(raw)
+        super().get_current_readings(raw=raw, retry=retry, maxretries=maxretries, delay=delay)
+
         # reduce self.data['inverter'] to a single dict from a list
-        retval = None
-        if self.data.get("inverter"):
-            self.data["inverter"] = self.data["inverter"][0]
-        else:
-            if retry < maxretries:
-                logging.error(
-                    "no inverter data, try %s, trying again in %s seconds", retry, delay
-                )
-                time.sleep(delay)
-                return self.get_current_readings(
-                    raw=raw, retry=retry + 1, maxretries=maxretries, delay=delay
-                )
-            logging.error("No inverter data after %s retries, quitting.", retry)
-            sys.exit(f"No inverter data after {retry} retries, quitting.")
-        return retval
+        self.data["inverter"] = self.data["inverter"][0]
+
+        return self.data
+
+
     getCurrentReadings = get_current_readings
 
     def _get_station_location(self) -> Dict[str, Union[str, int]]:
