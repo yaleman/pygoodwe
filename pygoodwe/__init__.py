@@ -3,7 +3,6 @@
 
 from datetime import date, datetime
 import json
-from json.decoder import JSONDecodeError
 import logging
 import os
 from pathlib import Path
