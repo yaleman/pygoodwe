@@ -45,9 +45,6 @@ load-plugins = "pylint_pytest"
 [tool.ruff]
 line-length = 150
 
-[tool.mypy]
-plugins = "pydantic.mypy"
-
 [project.urls]
 documentation = "https://yaleman.github.io/pygoodwe/"
 homepage = "https://github.com/yaleman/pygoodwe"
