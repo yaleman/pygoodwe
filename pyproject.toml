@@ -2,21 +2,22 @@
 name = "pygoodwe"
 version = "0.1.6"
 description = "A command line tool and python library to query the GOODWE SEMS Portal APIs."
-authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
+authors = [
+    "James Hodgkinson <james@terminaloutcomes.com>",
+]
 license = "MIT"
-
 classifiers = [
-        "Development Status :: 4 - Beta",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent"
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
 ]
 keywords = [
     "goodwe",
     "solar",
     "api",
-    "pygoodwe"
+    "pygoodwe",
 ]
 readme = "README.md"
 
@@ -32,24 +33,28 @@ mkdocs-material = "^9.0.2"
 mkdocstrings = "^0.20.0"
 mkdocstrings-python = "^0.8.0"
 
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.28.1"
+
+[tool.pylint.MASTER]
+disable = "W0511"
+max-line-length = 150
+load-plugins = "pylint_pytest"
+
+[tool.ruff]
+line-length = 150
+
+[tool.mypy]
+plugins = "pydantic.mypy"
+
 [project.urls]
 documentation = "https://yaleman.github.io/pygoodwe/"
 homepage = "https://github.com/yaleman/pygoodwe"
 repository = "https://github.com/yaleman/pygoodwe"
 
-
-[tool.poetry.dependencies]
-python = "^3.8"
-requests = "^2.28.1"
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = [
+    "poetry-core>=1.0.0",
+]
 build-backend = "poetry.core.masonry.api"
-
-[tool.pylint.MASTER]
-disable="W0511"
-max-line-length=150
-load-plugins="pylint_pytest"
-
-[tool.ruff]
-line-length=150
