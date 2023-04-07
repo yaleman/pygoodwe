@@ -30,7 +30,7 @@ black = "^23.1.0"
 pylint-pytest = "^1.1.2"
 mkdocs = "^1.4.2"
 mkdocs-material = "^9.0.2"
-mkdocstrings = "^0.20.0"
+mkdocstrings = ">=0.20,<0.22"
 mkdocstrings-python = "^0.8.0"
 
 [tool.poetry.dependencies]
