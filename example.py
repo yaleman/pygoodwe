@@ -1,31 +1,30 @@
-#!/usr/bin/env python3
+""" example script showing how you can run things"""
 
 import json
-import pytest
-
-
-from config import args
-from pygoodwe import SingleInverter, API
-from datetime import date, timedelta
 from functools import lru_cache
 
+# copy config.py.example to config.py and fill in your details
+from config import args
+
+from pygoodwe import SingleInverter
+
 @lru_cache()
-def get_single_inverter(args=args):
-    """ test fixgure """
+def get_single_inverter(args=args): #pylint: disable=redefined-outer-name,dangerous-default-value
+    """ test fixture """
     print("Single Inverter")
-    gw = SingleInverter(
+    goodwe = SingleInverter(
             system_id=args.get('gw_station_id', '1'),
             account=args.get('gw_account', 'thiswillnotwork'),
             password=args.get('gw_password', 'thiswillnotwork'),
             )
     # print("Grabbing data")
-    gw.getCurrentReadings()
-    return gw
+    goodwe.getCurrentReadings()
+    return goodwe
 
 def test_get_temperature():
     """ tests getting the temp """
-    gw=get_single_inverter()
-    assert gw.get_inverter_temperature()
+    goodwe=get_single_inverter()
+    assert goodwe.get_inverter_temperature()
 
 # print("Multi Inverter")
 # gw = API(
@@ -46,8 +45,8 @@ print(f"Available fields in data: {inverter.data.keys()}")
 print(json.dumps(inverter.data.get('inverter').get('battery'), indent=2))
 batterydata = inverter.data.get('inverter',{}).get('battery',"").split("/")
 if batterydata:
-        voltage = float(batterydata[0][:-1])
-        print(f"Battery voltage is: {voltage}")
+    voltage = float(batterydata[0][:-1])
+    print(f"Battery voltage is: {voltage}")
 #print(json.dumps(gw.data))
 #print(f"Are the batteries full? {gw.are_batteries_full(fullstate=90.0)}")
 

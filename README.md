@@ -5,7 +5,7 @@ A command line tool and python library to query the GOODWE SEMS Portal APIs.
 
 ## API Docs
 
-Auto-generated documentation is here: https://yaleman.github.io/pygoodwe/
+Auto-generated documentation is here: <https://yaleman.github.io/pygoodwe/>
 
 ## Installation
 
@@ -18,6 +18,8 @@ Determine the Station ID from the GOODWE site as follows. Open the [Sems Portal]
     https://www.semsportal.com/powerstation/powerstatussnmin/11112222-aaaa-bbbb-cccc-ddddeeeeeffff
 
 Then the Station ID is `11112222-aaaa-bbbb-cccc-ddddeeeeeffff`.
+
+To use example.py or the other examples, copy config.py.example to config.py and add your details.
 
 ## Contributions
 
