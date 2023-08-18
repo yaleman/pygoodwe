@@ -31,7 +31,7 @@ pylint-pytest = "^1.1.2"
 mkdocs = "^1.4.2"
 mkdocs-material = "^9.0.2"
 mkdocstrings = ">=0.20,<0.23"
-mkdocstrings-python = ">=0.8,<1.4"
+mkdocstrings-python = ">=0.8,<1.5"
 
 [tool.poetry.dependencies]
 python = "^3.8"
