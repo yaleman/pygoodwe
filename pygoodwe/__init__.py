@@ -245,6 +245,10 @@ class API():
                 timeout=timeout,
             )
             response.raise_for_status()
+            data = response.json()
+            if data.get("code") != 0:
+                logging.error("Failed to log in: %s", data.get("msg"))
+                return False
         except requests.exceptions.RequestException as exp:
             logging.error("RequestException during do_login(): %s", exp)
             return False
