@@ -1,14 +1,13 @@
 """ testing module """
 
 from datetime import date, timedelta
-# import json
-# from json.decoder import JSONDecodeError
+
 import logging
 import os
 
-# import requests
+
 import pytest
-from pygoodwe import SingleInverter #, POWERFLOW_STATUS_TEXT
+from pygoodwe import SingleInverter  # , POWERFLOW_STATUS_TEXT
 
 
 if os.getenv("LOG_LEVEL", "INFO") in ("DEBUG", "INFO", "WARNING"):
@@ -21,66 +20,71 @@ if os.getenv("LOG_LEVEL", "INFO") in ("DEBUG", "INFO", "WARNING"):
 # dict_keys(['info', 'kpi', 'images', 'weather', 'inverter', 'hjgx',
 #   'pre_powerstation_id', 'nex_powerstation_id', 'homKit', 'smuggleInfo',
 #   'powerflow', 'energeStatisticsCharts', 'soc'])
-#print(data['info'].keys())
+# print(data['info'].keys())
 
 # data['info'].keys(): dict_keys(['powerstation_id', 'time', 'stationname',
 #   'address', 'owner_name', 'owner_phone', 'owner_email', 'battery_capacity',
 #   'turnon_time', 'create_time', 'capacity', 'longitude', 'latitude',
 #   'powerstation_type', 'status', 'is_stored', 'is_powerflow', 'charts_type',
 #   'has_pv', 'has_statistics_charts', 'only_bps', 'only_bpu', 'time_span', 'pr_value'])
-#print(data['info'].keys())
-#print(json.dumps(data['info'], indent=2))
+# print(data['info'].keys())
+# print(json.dumps(data['info'], indent=2))
+
 
 @pytest.fixture(scope="session")
 def inverter() -> SingleInverter:
-    """ used to start up the class """
+    """used to start up the class"""
     if os.environ.get("GOODWE_USE_CONFIG", False):
-        #pylint: disable=import-outside-toplevel
+        # pylint: disable=import-outside-toplevel
         try:
             from config import args
         except ImportError:
             pytest.skip("Couldn't find config.py")
-        logging.info("Using config from config.py")
+        print("Using config from config.py")
 
         goodweinverter = SingleInverter(
-            system_id=args['gw_station_id'],
-            account=args['gw_account'],
-            password=args['gw_password'],
+            system_id=args["gw_station_id"],
+            account=args["gw_account"],
+            password=args["gw_password"],
             # api_url=args.get('api_url'),
         )
-    elif os.environ.get('GOODWE_USERNAME', False):
-        logging.info("Using Environment variables for config.")
-        goodweinverter = SingleInverter(system_id=os.environ['GOODWE_SYSTEMID'],
-                            account=os.environ['GOODWE_USERNAME'],
-                            password=os.environ['GOODWE_PASSWORD'],
-                            )
-    else:
-        logging.info("Using cached result for tests...")
-        if not os.path.exists('testdata.json'):
-            pytest.skip("Could not find data file 'testdata.json'")
-        goodweinverter = SingleInverter("","","", skipload=True)
-        goodweinverter.loaddata('testdata.json')
+        assert goodweinverter.do_login()
 
-    assert goodweinverter.do_login()
+    elif os.environ.get("GOODWE_USERNAME", False):
+        print("Using Environment variables for config.")
+        goodweinverter = SingleInverter(
+            system_id=os.environ["GOODWE_SYSTEMID"],
+            account=os.environ["GOODWE_USERNAME"],
+            password=os.environ["GOODWE_PASSWORD"],
+        )
+        assert goodweinverter.do_login()
+    else:
+        print("Using cached result for tests...")
+        if not os.path.exists("testdata.json"):
+            pytest.skip("Could not find data file 'testdata.json'")
+        goodweinverter = SingleInverter("", "", "", skipload=True)
+        goodweinverter.loaddata("testdata.json")
 
     return goodweinverter
 
 
 def test_instantiate(inverter: SingleInverter) -> None:
-    """ tests just setting up and pulling data """
-    assert inverter.data['info'].keys()
+    """tests just setting up and pulling data"""
+    assert inverter.data["info"].keys()
     assert "info" in inverter.data
     print(inverter.data)
 
+
 def test_get_data_pvoutput(inverter: SingleInverter) -> None:
-    """ tests that getDataPvoutput works """
+    """tests that getDataPvoutput works"""
     print(inverter.getDataPvoutput())
 
-#print(gw.data['info'])
-#print(gw.get_station_location())
 
-#print(gw.data['homKit'])
-#assert gw.data['homKit'].keys() == [ 'homeKitLimit', 'sn' ]
+# print(gw.data['info'])
+# print(gw.get_station_location())
+
+# print(gw.data['homKit'])
+# assert gw.data['homKit'].keys() == [ 'homeKitLimit', 'sn' ]
 
 # PV flow data
 # gw.data['powerflow']['pv'] = str
@@ -88,51 +92,55 @@ def test_get_data_pvoutput(inverter: SingleInverter) -> None:
 # gw.getPVFlow()
 
 # PV Flow Status
-#if gw.data['powerflow']['pvStatus'] == -1:
+# if gw.data['powerflow']['pvStatus'] == -1:
 #    # going out
 #    pvflow_direction = POWERFLOW_STATUS_TEXT.get(gw.data['powerflow']['pvStatus'], 'Unknown')
 #    pass
-#else:
+# else:
 #    raise NotImplementedError(f"data['powerflow']['pvStatus'] of {gw.data['powerflow']['pvStatus']} isn't accounted for")
-#print(f"PV flow (W): {pvflow} {pvflow_direction}")
+# print(f"PV flow (W): {pvflow} {pvflow_direction}")
 
 # Battery flow status
-#if gw.data['powerflow']['bettery'].endswith('(W)'):
+# if gw.data['powerflow']['bettery'].endswith('(W)'):
 #    batteryflow = float(gw.data['powerflow']['bettery'][:-3])
-#else:
+# else:
 #    batteryflow = float(gw.data['powerflow']['bettery'])
-#batteryflow_direction = POWERFLOW_STATUS_TEXT.get(gw.data['powerflow']['betteryStatus'],'Unknown')
-#print(f"Battery flow (W): {batteryflow} {batteryflow_direction}")
+# batteryflow_direction = POWERFLOW_STATUS_TEXT.get(gw.data['powerflow']['betteryStatus'],'Unknown')
+# print(f"Battery flow (W): {batteryflow} {batteryflow_direction}")
 
 # Load status
 
-#print(f"House flow (W): {loadflow} {loadflow_direction}")
+# print(f"House flow (W): {loadflow} {loadflow_direction}")
 
 
 def test_get_temperature(inverter: SingleInverter) -> None:
-    """ tests getting the temp """
+    """tests getting the temp"""
     assert isinstance(inverter.get_inverter_temperature(), float)
     assert inverter.get_inverter_temperature()
 
+
 # Grid flow status
 def test_flow_status(inverter: SingleInverter) -> None:
-    """ tests flow status """
-    if inverter.data['powerflow']['grid'].endswith('(W)'):
-        gridflow = float(inverter.data['powerflow']['grid'][:-3])
+    """tests flow status"""
+    if inverter.data["powerflow"]["grid"].endswith("(W)"):
+        gridflow = float(inverter.data["powerflow"]["grid"][:-3])
     else:
-        gridflow = float(inverter.data['powerflow']['grid'])
-    if inverter.data['powerflow']['gridStatus'] == 1:
+        gridflow = float(inverter.data["powerflow"]["grid"])
+    if inverter.data["powerflow"]["gridStatus"] == 1:
         gridflow_direction = "Exporting"
     else:
-        raise NotImplementedError(f"gw.data['powerflow']['gridStatus'] == {inverter.data['powerflow']['gridStatus']}")
+        raise NotImplementedError(
+            f"gw.data['powerflow']['gridStatus'] == {inverter.data['powerflow']['gridStatus']}"
+        )
     assert isinstance(gridflow, float)
     assert gridflow_direction
 
+
 # TODO: gw.data['powerflow']['hasEquipment']  - bool
 def test_hasequipment_value(inverter: SingleInverter) -> None:
-    """ tests that the instance has a value for powerflow-hasequipment"""
-    assert isinstance(inverter.data['powerflow']['hasEquipment'], bool)
-    #print(f"Hasequipment: {gw.data['powerflow']['hasEquipment']}")
+    """tests that the instance has a value for powerflow-hasequipment"""
+    assert isinstance(inverter.data["powerflow"]["hasEquipment"], bool)
+    # print(f"Hasequipment: {gw.data['powerflow']['hasEquipment']}")
 
 
 # WTF is smuggle.
@@ -144,8 +152,9 @@ def test_hasequipment_value(inverter: SingleInverter) -> None:
 #   "sns": null
 # }
 
+
 def test_hjgx_exists(inverter: SingleInverter) -> None:
-    """ tests that the hjgx data is there """
+    """tests that the hjgx data is there"""
     # print(json.dumps(gw.data['hjgx'], indent=2))
     # {
     #   "co2": 0.4837444,
@@ -153,7 +162,7 @@ def test_hjgx_exists(inverter: SingleInverter) -> None:
     #   "coal": 0.1960208
     # }
     if "hjgx" in inverter.data:
-        assert set(inverter.data['hjgx'].keys()) == set(['co2', 'tree', 'coal'])
+        assert set(inverter.data["hjgx"].keys()) == set(["co2", "tree", "coal"])
 
 
 # print(json.dumps(gw.data['kpi'], indent=2))
@@ -167,19 +176,21 @@ def test_hjgx_exists(inverter: SingleInverter) -> None:
 #   "currency": "AUD" # confgurable
 # }
 
-#print(json.dumps(gw.data['inverter'],indent=2))
+# print(json.dumps(gw.data['inverter'],indent=2))
+
 
 def test_getvoltage(inverter: SingleInverter) -> None:
-    """ tests the getvoltage functino"""
+    """tests the getvoltage functino"""
     assert isinstance(inverter.getVoltage(), float)
 
-#pylint: disable=invalid-name
+
+# pylint: disable=invalid-name
 def test_getDayDetailedReadingsExcel(
     inverter: SingleInverter,
     tmpdir_factory: pytest.TempdirFactory,
-    ) -> None:
-    """ test downloading xls data """
-    filename = tmpdir_factory.mktemp("data").join("data.xls") # type: ignore
+) -> None:
+    """test downloading xls data"""
+    filename = tmpdir_factory.mktemp("data").join("data.xls")  # type: ignore
     if os.environ.get("GOODWE_USE_CONFIG", False):
         yesterday = date.today() - timedelta(days=1)
         # yesterday_str = yesterday.strftime("%Y-%m-%d")
@@ -192,6 +203,7 @@ def test_getDayDetailedReadingsExcel(
     else:
         pytest.skip()
     assert True
+
 
 # def test_report(inverter: SingleInverter) -> None:
 #     """manually doing it"""

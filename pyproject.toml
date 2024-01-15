@@ -32,6 +32,7 @@ mkdocs = "^1.4.2"
 mkdocs-material = "^9.0.2"
 mkdocstrings = ">=0.20,<0.25"
 mkdocstrings-python = ">=0.8,<1.9"
+requests-mock = "^1.11.0"
 
 [tool.poetry.dependencies]
 python = "^3.8"
