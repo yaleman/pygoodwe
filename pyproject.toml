@@ -1,10 +1,8 @@
 [tool.poetry]
 name = "pygoodwe"
-version = "0.1.6"
+version = "0.1.7"
 description = "A command line tool and python library to query the GOODWE SEMS Portal APIs."
-authors = [
-    "James Hodgkinson <james@terminaloutcomes.com>",
-]
+authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
 license = "MIT"
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -13,12 +11,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-keywords = [
-    "goodwe",
-    "solar",
-    "api",
-    "pygoodwe",
-]
+keywords = ["goodwe", "solar", "api", "pygoodwe"]
 readme = "README.md"
 
 [tool.poetry.group.dev.dependencies]
@@ -52,7 +45,5 @@ homepage = "https://github.com/yaleman/pygoodwe"
 repository = "https://github.com/yaleman/pygoodwe"
 
 [build-system]
-requires = [
-    "poetry-core>=1.0.0",
-]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
