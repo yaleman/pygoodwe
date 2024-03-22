@@ -35,4 +35,4 @@ GOODWE access is based on the undocumented API used by mobile apps. This could b
 
 ## Example Code
 
-Please check out test.py in the base of the repository for some simple example code.
+Please check out example.py or the examples folder in [the project repository](https://github.com/yaleman/pygoodwe) for some simple example code.
