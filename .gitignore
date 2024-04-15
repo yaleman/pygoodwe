@@ -37,3 +37,4 @@ venv/
 .env
 build/
 poetry.lock
+.coverage
