@@ -10,7 +10,7 @@ jobs:
   pylint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.4
+      - uses: actions/checkout@v4.1.5
         with:
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
       - name: Set up Python 3.9
