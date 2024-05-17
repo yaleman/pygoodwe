@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.21">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
       
       
 
@@ -941,11 +941,11 @@
 
 
 <a id="pygoodwe"></a>
-  <div class="doc doc-contents first">
-  
+    <div class="doc doc-contents first">
+
       <p>pygoodwe: a (terrible) interface to the goodwe solar API</p>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -961,20 +961,20 @@
 
 
 <h2 id="pygoodwe.API" class="doc doc-heading">
-          <code>API</code>
+            <code>API</code>
 
 
 </h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
-  
+
       <p>API implementation</p>
 
-            <details class="quote">
-              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 25</span>
+              <details class="quote">
+                <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 25</span>
 <span class="normal"> 26</span>
 <span class="normal"> 27</span>
 <span class="normal"> 28</span>
@@ -1744,9 +1744,9 @@
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;v6&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getVoltage</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># voltage</span>
         <span class="k">return</span> <span class="n">data</span>
 </code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1761,8 +1761,8 @@
 
 
 <h3 id="pygoodwe.API.headers" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -1770,35 +1770,33 @@
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>request headers</p>
-  </div>
+    </div>
 
 </div>
-
 
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.__init__" class="doc doc-heading">
-          <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">system_id</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">api_url</span><span class="o">=</span><span class="n">API_URL</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_agent</span><span class="o">=</span><span class="n">DEFAULT_UA</span><span class="p">,</span> <span class="n">skipload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">system_id</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">api_url</span><span class="o">=</span><span class="n">API_URL</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_agent</span><span class="o">=</span><span class="n">DEFAULT_UA</span><span class="p">,</span> <span class="n">skipload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Options:</p>
 <p>skipload: don't run self.getCurrentReadings() on init
 api_url: you can change the API endpoint it hits</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
@@ -1892,31 +1890,29 @@ api_url: you can change the API endpoint it hits</p>
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Doing load of data&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentReadings</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.are_batteries_full" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">are_batteries_full</span><span class="p">(</span><span class="n">fullstate</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">are_batteries_full</span><span class="p">(</span><span class="n">fullstate</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>boolean result for if the batteries are full. you can set your given 'full'
 percentage in float if you want to lower this a little
 are_batteries_full(fullstate=90.0): returns bool</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">322</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">322</span>
 <span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
@@ -1934,29 +1930,27 @@ are_batteries_full(fullstate=90.0): returns bool</p>
             <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.call" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">call</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">max_tries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">call</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">max_tries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>makes a call to the API</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
@@ -2064,29 +2058,27 @@ are_batteries_full(fullstate=90.0): returns bool</p>
     <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to call GoodWe API url=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">url</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{}</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.do_login" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">do_login</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">do_login</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>does the login and token saving thing</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">226</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">226</span>
 <span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
@@ -2148,24 +2140,22 @@ are_batteries_full(fullstate=90.0): returns bool</p>
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Done login, token: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.getDataPvoutput" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">getDataPvoutput</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">getDataPvoutput</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>updates and returns the data necessary for a one-shot pvoutput upload
 'd' : testdate.strftime("%Y%m%d"),
 't' : testtime.strftime("%H:%M"),
@@ -2174,9 +2164,9 @@ are_batteries_full(fullstate=90.0): returns bool</p>
 'v5' : 23.5, # temperature
 'v6' : 234.0, # voltage</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">385</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">385</span>
 <span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span>
@@ -2226,32 +2216,30 @@ are_batteries_full(fullstate=90.0): returns bool</p>
     <span class="n">data</span><span class="p">[</span><span class="s2">&quot;v6&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getVoltage</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># voltage</span>
     <span class="k">return</span> <span class="n">data</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.getDayDetailedReadingsExcel" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">getDayDetailedReadingsExcel</span><span class="p">(</span><span class="n">export_date</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">getDayDetailedReadingsExcel</span><span class="p">(</span><span class="n">export_date</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>retrieves the detailed daily results of the given date as an Excel sheet,
 processing the Excel sheet is outside the scope of the current module,
 possible args:
 - filename: the path where to write the output file, default "./Plant_Power_{datestr}.xls</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
@@ -2339,85 +2327,79 @@ possible args:
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.getLoadFlow" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">getLoadFlow</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">getLoadFlow</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>returns the list of inverter multi-unit load watts</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">370</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">370</span>
 <span class="normal">371</span>
 <span class="normal">372</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">getLoadFlow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>  <span class="c1"># pylint: disable=invalid-name</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;returns the list of inverter multi-unit load watts&quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;multi-unit load watts isn&#39;t implemented yet&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.getPVFlow" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">getPVFlow</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">getPVFlow</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>PV flow data</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">349</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">349</span>
 <span class="normal">350</span>
 <span class="normal">351</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">getPVFlow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;PV flow data&quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;SingleInverter has this, multi does not&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.getPmeter" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">getPmeter</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">getPmeter</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>gets the current line pmeter</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">364</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">364</span>
 <span class="normal">365</span>
 <span class="normal">366</span>
 <span class="normal">367</span>
@@ -2427,29 +2409,27 @@ possible args:
         <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentReadings</span><span class="p">()</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inverter&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;invert_full&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pmeter&quot;</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.getVoltage" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">getVoltage</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">getVoltage</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>returns the a list of the first AC channel voltages</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">353</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">353</span>
 <span class="normal">354</span>
 <span class="normal">355</span>
 <span class="normal">356</span>
@@ -2469,57 +2449,53 @@ possible args:
         <span class="k">for</span> <span class="n">inverter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;inverter&quot;</span><span class="p">]</span>
     <span class="p">]</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.get_batteries_soc" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_batteries_soc</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">get_batteries_soc</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>return the battery state of charge</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">345</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">345</span>
 <span class="normal">346</span>
 <span class="normal">347</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_batteries_soc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;return the battery state of charge&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_batteries_soc</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.get_current_readings" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_current_readings</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxretries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">get_current_readings</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxretries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>gets readings at the current point in time</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 84</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 84</span>
 <span class="normal"> 85</span>
 <span class="normal"> 86</span>
 <span class="normal"> 87</span>
@@ -2577,29 +2553,27 @@ possible args:
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No inverter data after </span><span class="si">{</span><span class="n">retry</span><span class="si">}</span><span class="s2"> retries, quitting.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">retval</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.get_inverter_temperature" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_inverter_temperature</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">get_inverter_temperature</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>returns the list of inverter temperatures</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">374</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">374</span>
 <span class="normal">375</span>
 <span class="normal">376</span>
 <span class="normal">377</span>
@@ -2619,29 +2593,27 @@ possible args:
         <span class="k">for</span> <span class="n">inverter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;inverter&quot;</span><span class="p">]</span>
     <span class="p">]</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.loaddata" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">loaddata</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">loaddata</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>loads a json file of existing data</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">77</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">77</span>
 <span class="normal">78</span>
 <span class="normal">79</span>
 <span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">loaddata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2649,19 +2621,17 @@ possible args:
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">filehandle</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">filehandle</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.API.parseValue" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">parseValue</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span></code>
-  
+            <code class="highlight language-python"><span class="n">parseValue</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
@@ -2669,13 +2639,13 @@ possible args:
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>takes a string value and reutrns it as a float (if possible)</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">313</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">313</span>
 <span class="normal">314</span>
 <span class="normal">315</span>
 <span class="normal">316</span>
@@ -2691,8 +2661,8 @@ possible args:
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ValueError: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exp</span><span class="p">)</span>
         <span class="k">return</span> <span class="mf">0.0</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -2700,8 +2670,7 @@ possible args:
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -2710,22 +2679,22 @@ possible args:
 
 
 <h2 id="pygoodwe.SingleInverter" class="doc doc-heading">
-          <code>SingleInverter</code>
+            <code>SingleInverter</code>
 
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="pygoodwe.API" href="#pygoodwe.API">API</a></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="pygoodwe.API" href="#pygoodwe.API">API</a></code></p>
 
-  
+
       <p>API implementation for an account with a single inverter</p>
 
-            <details class="quote">
-              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">412</span>
+              <details class="quote">
+                <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">412</span>
 <span class="normal">413</span>
 <span class="normal">414</span>
 <span class="normal">415</span>
@@ -3061,12 +3030,11 @@ possible args:
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;v6&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getVoltage</span><span class="p">()</span>  <span class="c1"># voltage</span>
         <span class="k">return</span> <span class="n">data</span>
 </code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
-
 
 
 
@@ -3079,15 +3047,14 @@ possible args:
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.SingleInverter.getDataPvoutput" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">getDataPvoutput</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">getDataPvoutput</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>updates and returns the data necessary for a one-shot pvoutput upload
 'd' : testdate.strftime("%Y%m%d"),
 't' : testtime.strftime("%H:%M"),
@@ -3096,9 +3063,9 @@ possible args:
 'v5' : 23.5, # temperature
 'v6' : 234.0, # voltage</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">555</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">555</span>
 <span class="normal">556</span>
 <span class="normal">557</span>
 <span class="normal">558</span>
@@ -3148,29 +3115,27 @@ possible args:
     <span class="n">data</span><span class="p">[</span><span class="s2">&quot;v6&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getVoltage</span><span class="p">()</span>  <span class="c1"># voltage</span>
     <span class="k">return</span> <span class="n">data</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.SingleInverter.getPVFlow" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">getPVFlow</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">getPVFlow</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>returns the current flow amount of the PV panels</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">476</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">476</span>
 <span class="normal">477</span>
 <span class="normal">478</span>
 <span class="normal">479</span>
@@ -3188,29 +3153,27 @@ possible args:
         <span class="n">pvflow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;powerflow&quot;</span><span class="p">][</span><span class="s2">&quot;pv&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">pvflow</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.SingleInverter.getVoltage" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">getVoltage</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">getVoltage</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>gets the current line voltage</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">486</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">486</span>
 <span class="normal">487</span>
 <span class="normal">488</span>
 <span class="normal">489</span>
@@ -3220,30 +3183,28 @@ possible args:
         <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentReadings</span><span class="p">()</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;inverter&quot;</span><span class="p">][</span><span class="s2">&quot;invert_full&quot;</span><span class="p">][</span><span class="s2">&quot;vac1&quot;</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.SingleInverter.get_battery_soc" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_battery_soc</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">get_battery_soc</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>returns the single value state of charge for the batteries in the plant
 returns : float</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">544</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">544</span>
 <span class="normal">545</span>
 <span class="normal">546</span>
 <span class="normal">547</span>
@@ -3253,29 +3214,27 @@ returns : float</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_batteries_soc</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.SingleInverter.get_current_readings" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_current_readings</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxretries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">get_current_readings</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxretries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>grabs the data and makes sure self.data only has a single inverter</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">442</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">442</span>
 <span class="normal">443</span>
 <span class="normal">444</span>
 <span class="normal">445</span>
@@ -3311,29 +3270,27 @@ returns : float</p>
 
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.SingleInverter.get_day_income" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_day_income</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">get_day_income</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>gets the current daily income</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">492</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">492</span>
 <span class="normal">493</span>
 <span class="normal">494</span>
 <span class="normal">495</span>
@@ -3343,29 +3300,27 @@ returns : float</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentReadings</span><span class="p">()</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;kpi&quot;</span><span class="p">][</span><span class="s2">&quot;day_income&quot;</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.SingleInverter.get_day_power" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_day_power</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">get_day_power</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>gets the total power generated</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">510</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">510</span>
 <span class="normal">511</span>
 <span class="normal">512</span>
 <span class="normal">513</span>
@@ -3375,29 +3330,27 @@ returns : float</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentReadings</span><span class="p">()</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;kpi&quot;</span><span class="p">][</span><span class="s2">&quot;power&quot;</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.SingleInverter.get_station_location" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_station_location</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">get_station_location</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>gets the identified lat and long from the station data</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">467</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">467</span>
 <span class="normal">468</span>
 <span class="normal">469</span>
 <span class="normal">470</span>
@@ -3413,29 +3366,27 @@ returns : float</p>
         <span class="s2">&quot;longitude&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;longitude&quot;</span><span class="p">),</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.SingleInverter.get_total_income" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_total_income</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">get_total_income</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>gets the total income</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">498</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">498</span>
 <span class="normal">499</span>
 <span class="normal">500</span>
 <span class="normal">501</span>
@@ -3445,29 +3396,27 @@ returns : float</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentReadings</span><span class="p">()</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;kpi&quot;</span><span class="p">][</span><span class="s2">&quot;total_income&quot;</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.SingleInverter.get_total_power" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_total_power</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">get_total_power</span><span class="p">()</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>gets the total power generated</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">504</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">504</span>
 <span class="normal">505</span>
 <span class="normal">506</span>
 <span class="normal">507</span>
@@ -3477,29 +3426,27 @@ returns : float</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentReadings</span><span class="p">()</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;kpi&quot;</span><span class="p">][</span><span class="s2">&quot;total_power&quot;</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="pygoodwe.SingleInverter.loaddata" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">loaddata</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">loaddata</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>loads the ata from a given file</p>
 
-          <details class="quote">
-            <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">436</span>
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">436</span>
 <span class="normal">437</span>
 <span class="normal">438</span>
 <span class="normal">439</span>
@@ -3509,8 +3456,8 @@ returns : float</p>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inverter&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;inverter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;inverter&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -3518,8 +3465,7 @@ returns : float</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -3528,7 +3474,7 @@ returns : float</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -3580,7 +3526,7 @@ returns : float</p>
     <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.a7c05c9e.min.js"></script>
+      <script src="../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
     
   </body>
