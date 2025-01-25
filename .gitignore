@@ -37,3 +37,6 @@ venv/
 .env
 build/
 .coverage
+
+# docs
+site/
