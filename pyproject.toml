@@ -6,7 +6,7 @@ requires-python = "<4.0,>=3.9"
 dependencies = ["requests<3.0.0,>=2.28.1"]
 description = "A command line tool and python library to query the GOODWE SEMS Portal APIs."
 authors = [{ name = "James Hodgkinson", email = "james@terminaloutcomes.com" }]
-license = { text = "MIT" }
+license = "MIT"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
@@ -51,3 +51,7 @@ dev = [
     "validate-pyproject<0.24,>=0.16",
     "pytest-cov<7,>=5",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
