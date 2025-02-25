@@ -21,3 +21,4 @@
 * 0.1.4 2022-12-30 XLS Export fixes
 * 0.1.5 2023-01-04 Fixes for get_current_readings to pass settings down properly, and do less double-error-handling.
 * 0.1.7 2024-01-15 Adding login error handling and dependency updates.
+* 0.1.9 2025-02-25 Moving to uv for package management.
