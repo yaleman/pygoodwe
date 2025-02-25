@@ -21,6 +21,5 @@ jobs:
         run: |
           echo 'args = {}' > config.py
           python --version
-          python -m pip install --quiet --no-cache-dir --upgrade poetry
-          poetry install
-          poetry run mypy $(basename $(pwd) | sed -E 's/-/_/g') tests/
+          python -m pip install --quiet --no-cache-dir --upgrade uv
+          uv run mypy $(basename $(pwd) | sed -E 's/-/_/g') tests/

@@ -7,11 +7,11 @@ help:
 .PHONY: checks
 checks: ## Run linting etc
 checks:
-	poetry run pytest
-	poetry run ruff tests pygoodwe
-	poetry run mypy --strict tests pygoodwe
+	uv run pytest
+	uv run ruff check tests pygoodwe
+	uv run mypy --strict tests pygoodwe
 
 .PHONY: coverage
 coverage: ## Run tests with coverage
 coverage:
-	poetry run pytest --cov-report html --cov=pygoodwe tests
+	uv run pytest --cov-report html --cov=pygoodwe tests
