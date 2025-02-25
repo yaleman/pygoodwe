@@ -321,6 +321,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pygoodwe.API._get_batteries_soc" class="md-nav__link">
+    <span class="md-ellipsis">
+      _get_batteries_soc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pygoodwe.API.are_batteries_full" class="md-nav__link">
     <span class="md-ellipsis">
       are_batteries_full
@@ -460,6 +469,24 @@
   
     <nav class="md-nav" aria-label="SingleInverter">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pygoodwe.SingleInverter._get_batteries_soc" class="md-nav__link">
+    <span class="md-ellipsis">
+      _get_batteries_soc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pygoodwe.SingleInverter._get_station_location" class="md-nav__link">
+    <span class="md-ellipsis">
+      _get_station_location
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#pygoodwe.SingleInverter.getDataPvoutput" class="md-nav__link">
@@ -677,6 +704,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pygoodwe.API._get_batteries_soc" class="md-nav__link">
+    <span class="md-ellipsis">
+      _get_batteries_soc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pygoodwe.API.are_batteries_full" class="md-nav__link">
     <span class="md-ellipsis">
       are_batteries_full
@@ -816,6 +852,24 @@
   
     <nav class="md-nav" aria-label="SingleInverter">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pygoodwe.SingleInverter._get_batteries_soc" class="md-nav__link">
+    <span class="md-ellipsis">
+      _get_batteries_soc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pygoodwe.SingleInverter._get_station_location" class="md-nav__link">
+    <span class="md-ellipsis">
+      _get_station_location
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#pygoodwe.SingleInverter.getDataPvoutput" class="md-nav__link">
@@ -1905,6 +1959,51 @@ api_url: you can change the API endpoint it hits</p>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Doing load of data&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentReadings</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pygoodwe.API._get_batteries_soc" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_get_batteries_soc</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>returns a list of the state of charge for the batteries
+returns: list[float,]</p>
+
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_get_batteries_soc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;returns a list of the state of charge for the batteries</span>
+<span class="sd">    returns: list[float,]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentReadings</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;inverter&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get data...&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="nb">float</span><span class="p">(</span><span class="n">inverter</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;invert_full&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;soc&quot;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">inverter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;inverter&quot;</span><span class="p">]</span>
+    <span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3064,6 +3163,66 @@ possible args:
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pygoodwe.SingleInverter._get_batteries_soc" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_get_batteries_soc</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>returns the state of charge of the battery</p>
+
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_get_batteries_soc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;returns the state of charge of the battery&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentReadings</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;soc&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No state of charge available from data&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;soc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;power&quot;</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pygoodwe.SingleInverter._get_station_location" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_get_station_location</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>gets the identified lat and long from the station data</p>
+
+            <details class="quote">
+              <summary>Source code in <code>pygoodwe/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_get_station_location</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;gets the identified lat and long from the station data&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_station_location</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
