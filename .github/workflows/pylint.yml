@@ -19,8 +19,7 @@ jobs:
           python-version: '3.12'
       - name: Running tests
         run: |
-            python -m pip install --quiet --no-cache-dir --upgrade poetry
-            poetry install
-            poetry run ruff check $(basename $(pwd) | sed -E 's/-/_/g')
-            poetry run ruff check tests/
-            poetry run validate-pyproject pyproject.toml
+            python -m pip install --quiet --no-cache-dir --upgrade uv
+            uv run ruff check $(basename $(pwd) | sed -E 's/-/_/g')
+            uv run ruff check tests/
+            uv run validate-pyproject pyproject.toml
