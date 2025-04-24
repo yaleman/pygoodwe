@@ -1,5 +1,4 @@
-""" pygoodwe: a (terrible) interface to the goodwe solar API """
-
+"""pygoodwe: a (terrible) interface to the goodwe solar API"""
 
 from datetime import date, datetime
 import json
@@ -189,7 +188,7 @@ class API:
         possible args:
         - filename: the path where to write the output file, default "./Plant_Power_{datestr}.xls
         """
-        datestr = datetime.strftime(export_date, "%Y-%m-%d")
+        datestr = export_date.strftime("%Y-%m-%d")
         if filename is None:
             filename = f"Plant_Power_{datestr}.xls"
         logging.debug("Will write data for %s to file: %s", datestr, filename)

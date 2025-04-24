@@ -50,6 +50,7 @@ dev = [
     "requests-mock<2.0.0,>=1.11.0",
     "validate-pyproject<0.24,>=0.16",
     "pytest-cov<7,>=5",
+    "pyright>=1.1.399",
 ]
 
 [build-system]
