@@ -1,7 +1,7 @@
 
 [project]
 name = "pygoodwe"
-version = "0.1.9"
+version = "0.1.10"
 requires-python = "<4.0,>=3.9"
 dependencies = ["requests<3.0.0,>=2.28.1"]
 description = "A command line tool and python library to query the GOODWE SEMS Portal APIs."
