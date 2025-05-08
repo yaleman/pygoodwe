@@ -39,6 +39,7 @@ def inverter() -> SingleInverter:
         try:
             from config import args
         except ImportError:
+            args = dict()
             pytest.skip("Couldn't find config.py")
         print("Using config from config.py")
 
