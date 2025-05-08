@@ -1,9 +1,10 @@
+---
 name: mypy
 
 "on":
   push:
     branches:
-      - main  # Set a branch to deploy
+      - main
   pull_request:
 
 jobs:
@@ -20,6 +21,6 @@ jobs:
       - name: Running mypy
         run: |
           echo 'args = {}' > config.py
-          python --version
           python -m pip install --quiet --no-cache-dir --upgrade uv
-          uv run mypy $(basename $(pwd) | sed -E 's/-/_/g') tests/
+          uv run mypy $(basename $(pwd) | sed -E 's/-/_/g') tests/ examples/
+          uv run ty check

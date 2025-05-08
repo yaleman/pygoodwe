@@ -10,6 +10,7 @@ import time
 from typing import Any, Dict, List, Optional, Union
 
 import requests
+import requests.exceptions
 from requests.sessions import Session
 
 __version__ = "0.0.17"
@@ -43,6 +44,8 @@ class API:
         """
         # TODO: lang: Real Soon Now it'll filter out any responses without that language
 
+        self.data: Dict[str, Any] = {}
+
         if log_level is None:
             if "LOG_LEVEL" in os.environ:
                 log_level = os.environ["LOG_LEVEL"]
@@ -68,7 +71,6 @@ class API:
 
         if skipload:
             logging.debug("Skipping initial load of data")
-            self.data: Dict[str, Any] = {}
         else:
             logging.debug("Doing load of data")
             self.getCurrentReadings(raw=True)
@@ -91,21 +93,15 @@ class API:
         payload = {"powerStationId": self.system_id}
 
         # GOODWE server
-        self.data = self.call(
-            "v2/PowerStation/GetMonitorDetailByPowerstationId", payload
-        )
+        self.data = self.call("v2/PowerStation/GetMonitorDetailByPowerstationId", payload)
 
         retval = self.data
 
         if not self.data.get("inverter"):
             if retry < maxretries:
-                logging.error(
-                    "no inverter data, try %s, trying again in %s seconds", retry, delay
-                )
+                logging.error("no inverter data, try %s, trying again in %s seconds", retry, delay)
                 time.sleep(delay)
-                return self.get_current_readings(
-                    raw=raw, retry=retry + 1, maxretries=maxretries, delay=delay
-                )
+                return self.get_current_readings(raw=raw, retry=retry + 1, maxretries=maxretries, delay=delay)
             logging.error("No inverter data after %s retries, quitting.", retry)
             sys.exit(f"No inverter data after {retry} retries, quitting.")
         return retval
@@ -290,9 +286,7 @@ class API:
                     )
                     and "data" in data
                 ):  # pylint: disable=no-else-return
-                    logging.debug(
-                        "Returning data: %s", json.dumps(data["data"], default=str)
-                    )
+                    logging.debug("Returning data: %s", json.dumps(data["data"], default=str))
                     result: Dict[str, Any] = data.get("data")
                     return result
                 logging.debug(json.dumps(data))
@@ -323,25 +317,26 @@ class API:
         percentage in float if you want to lower this a little
         are_batteries_full(fullstate=90.0): returns bool
         """
-        for battery in self.get_batteries_soc():
+        soc = self.get_batteries_soc()
+        if not isinstance(soc, list):
+            if soc >= fullstate:
+                return True
+            return False
+
+        for battery in soc:
             if battery < fullstate:
                 return False
         return True
 
-    def _get_batteries_soc(self) -> List[float]:
-        """returns a list of the state of charge for the batteries
-        returns: list[float,]
-        """
+    def _get_batteries_soc(self) -> Union[List[float], float]:
+        """returns a list of the state of charge for the batteries"""
         if not self.data:
             self.getCurrentReadings()
         if "inverter" not in self.data:
             raise ValueError("Couldn't get data...")
-        return [
-            float(inverter.get("invert_full", {}).get("soc"))
-            for inverter in self.data["inverter"]
-        ]
+        return [float(inverter.get("invert_full", {}).get("soc")) for inverter in self.data["inverter"]]
 
-    def get_batteries_soc(self) -> List[float]:
+    def get_batteries_soc(self) -> Union[List[float], float]:
         """return the battery state of charge"""
         return self._get_batteries_soc()
 
@@ -349,16 +344,13 @@ class API:
         """PV flow data"""
         raise NotImplementedError("SingleInverter has this, multi does not")
 
-    def getVoltage(self) -> List[float]:  # pylint: disable=invalid-name
+    def getVoltage(self) -> Union[List[float], float]:  # pylint: disable=invalid-name
         """returns the a list of the first AC channel voltages"""
         if not self.data:
             self.getCurrentReadings(True)
         if "inverter" not in self.data:
             raise ValueError("Couldn't get data...")
-        return [
-            float(inverter.get("invert_full", {}).get("vac1"))
-            for inverter in self.data["inverter"]
-        ]
+        return [float(inverter.get("invert_full", {}).get("vac1")) for inverter in self.data["inverter"]]
 
     def getPmeter(self) -> float:  # pylint: disable=invalid-name
         """gets the current line pmeter"""
@@ -366,20 +358,17 @@ class API:
             self.getCurrentReadings()
         return float(self.data.get("inverter", {}).get("invert_full", {}).get("pmeter"))
 
-    def getLoadFlow(self) -> List[float]:  # pylint: disable=invalid-name
+    def getLoadFlow(self) -> Union[List[float], float]:  # pylint: disable=invalid-name
         """returns the list of inverter multi-unit load watts"""
         raise NotImplementedError("multi-unit load watts isn't implemented yet")
 
-    def get_inverter_temperature(self) -> List[float]:
+    def get_inverter_temperature(self) -> Union[List[float], float]:
         """returns the list of inverter temperatures"""
         if not self.data:
             self.get_current_readings(True)
         if "inverter" not in self.data:
             raise ValueError("Couldn't get data...")
-        return [
-            float(inverter.get("invert_full", {}).get("tempperature"))
-            for inverter in self.data["inverter"]
-        ]
+        return [float(inverter.get("invert_full", {}).get("tempperature")) for inverter in self.data["inverter"]]
 
     def getDataPvoutput(
         self,
@@ -395,16 +384,28 @@ class API:
         if not self.data:
             self.getCurrentReadings()
         # "time": "10/04/2019 14:37:29"
-        timestamp = datetime.strptime(
-            self.data.get("info", {}).get("time"), "%m/%d/%Y %H:%M:%S"
-        )
+        timestamp = datetime.strptime(self.data.get("info", {}).get("time"), "%m/%d/%Y %H:%M:%S")
         data: Dict[str, Union[str, float]] = {}
         data["d"] = timestamp.strftime("%Y%m%d")  # date
         data["t"] = timestamp.strftime("%H:%M")  # time
         data["v2"] = self.getPVFlow()  # PV Generation
-        data["v4"] = self.getLoadFlow()[0]  # power consumption
-        data["v5"] = self.get_inverter_temperature()[0]  # inverter temperature
-        data["v6"] = self.getVoltage()[0]  # voltage
+
+        load_flow = self.getLoadFlow()
+        if isinstance(load_flow, list):
+            data["v4"] = load_flow[0]  # power consumption
+        else:
+            data["v4"] = load_flow
+        temp = self.get_inverter_temperature()
+        if isinstance(temp, list):
+            data["v5"] = temp[0]  # inverter temperature
+        else:
+            data["v5"] = temp
+
+        voltage = self.getVoltage()
+        if isinstance(voltage, list):
+            data["v6"] = voltage[0]
+        else:
+            data["v6"] = voltage
         return data
 
 
@@ -428,9 +429,7 @@ class SingleInverter(API):
         self.data: Dict[str, Any]
 
         # instantiate the base class
-        super().__init__(
-            system_id, account, password, api_url, log_level, user_agent, skipload
-        )
+        super().__init__(system_id, account, password, api_url, log_level, user_agent, skipload)
 
     def loaddata(self, filename: str) -> None:
         """loads the ata from a given file"""
@@ -448,9 +447,7 @@ class SingleInverter(API):
         """grabs the data and makes sure self.data only has a single inverter"""
 
         # update the data
-        super().get_current_readings(
-            raw=raw, retry=retry, maxretries=maxretries, delay=delay
-        )
+        super().get_current_readings(raw=raw, retry=retry, maxretries=maxretries, delay=delay)
 
         # reduce self.data['inverter'] to a single dict from a list
         self.data["inverter"] = self.data["inverter"][0]
@@ -482,7 +479,7 @@ class SingleInverter(API):
             pvflow = self.data["powerflow"]["pv"]
         return float(pvflow)
 
-    def getVoltage(self) -> float:  # type: ignore
+    def getVoltage(self) -> float:
         """gets the current line voltage"""
         if not self.data:
             self.getCurrentReadings()
@@ -512,7 +509,7 @@ class SingleInverter(API):
             self.getCurrentReadings()
         return float(self.data["kpi"]["power"])
 
-    def getLoadFlow(self) -> float:  # type: ignore
+    def getLoadFlow(self) -> float:
         if not self.data:
             self.getCurrentReadings()
         if self.data["powerflow"]["bettery"].endswith("(W)"):
@@ -525,14 +522,12 @@ class SingleInverter(API):
         elif self.data["powerflow"]["loadStatus"] == 1:
             loadflow_direction = "Using Battery"
         else:
-            raise ValueError(
-                f"Your 'load' is doing something odd - status is '{self.data['powerflow']['loadStatus']}''."
-            )  # pylint: disable=line-too-long
+            raise ValueError(f"Your 'load' is doing something odd - status is '{self.data['powerflow']['loadStatus']}''.")  # pylint: disable=line-too-long
         self.loadflow = loadflow
         self.loadflow_direction = loadflow_direction
         return loadflow
 
-    def _get_batteries_soc(self) -> float:  # type: ignore
+    def _get_batteries_soc(self) -> float:
         """returns the state of charge of the battery"""
         if not self.data:
             self.getCurrentReadings()
@@ -546,7 +541,7 @@ class SingleInverter(API):
         """
         return self._get_batteries_soc()
 
-    def get_inverter_temperature(self) -> float:  # type: ignore
+    def get_inverter_temperature(self) -> float:
         if not self.data:
             self.get_current_readings(True)
         return float(self.data["inverter"]["tempperature"])
@@ -565,9 +560,7 @@ class SingleInverter(API):
         if not self.data:
             self.getCurrentReadings()
         # "time": "10/04/2019 14:37:29"
-        timestamp = datetime.strptime(
-            self.data.get("info", {}).get("time"), "%m/%d/%Y %H:%M:%S"
-        )
+        timestamp = datetime.strptime(self.data.get("info", {}).get("time"), "%m/%d/%Y %H:%M:%S")
         data: Dict[str, Union[str, float]] = {}
         data["d"] = timestamp.strftime("%Y%m%d")  # date
         data["t"] = timestamp.strftime("%H:%M")  # time
