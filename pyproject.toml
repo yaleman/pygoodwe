@@ -39,7 +39,7 @@ dev = [
     "mkdocstrings<0.29,>=0.20",
     "mkdocstrings-python<1.17,>=0.8",
     "requests-mock<2.0.0,>=1.11.0",
-    "validate-pyproject<0.24,>=0.16",
+    "validate-pyproject>=0.16,<0.25",
     "pytest-cov<7,>=5",
     "ty>=0.0.0a7",
 ]
