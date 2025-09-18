@@ -1,12 +1,11 @@
 """testing module"""
 
 from datetime import date, timedelta
-
 import logging
 import os
 
-
 import pytest
+
 from pygoodwe import SingleInverter  # , POWERFLOW_STATUS_TEXT
 
 
@@ -130,9 +129,7 @@ def test_flow_status(inverter: SingleInverter) -> None:
     if inverter.data["powerflow"]["gridStatus"] == 1:
         gridflow_direction = "Exporting"
     else:
-        raise NotImplementedError(
-            f"gw.data['powerflow']['gridStatus'] == {inverter.data['powerflow']['gridStatus']}"
-        )
+        raise NotImplementedError(f"gw.data['powerflow']['gridStatus'] == {inverter.data['powerflow']['gridStatus']}")
     assert isinstance(gridflow, float)
     assert gridflow_direction
 

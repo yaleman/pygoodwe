@@ -21,6 +21,8 @@ POWERFLOW_STATUS_TEXT = {
 DEFAULT_UA = "PVMaster/2.0.4 (iPhone; iOS 11.4.1; Scale/2.00)"
 API_URL = "https://semsportal.com/api/"
 
+SUCCESS_MESSAGES = ("success", "successful", "操作成功")
+
 
 class API:
     """API implementation"""
@@ -277,15 +279,7 @@ class API:
 
                 # APIs return "success", "Success", "Successful" in the 'msg'
                 # seen "Successful" in ExportPowerStationPac
-                # logging.error("Msg result %s - %s", self.base_url + url, data.get('msg', ''))
-                if (
-                    data.get("msg", "").lower()
-                    in (
-                        "success",
-                        "successful",
-                    )
-                    and "data" in data
-                ):  # pylint: disable=no-else-return
+                if data.get("msg", "").lower() in SUCCESS_MESSAGES and "data" in data:  # pylint: disable=no-else-return
                     logging.debug("Returning data: %s", json.dumps(data["data"], default=str))
                     result: Dict[str, Any] = data.get("data")
                     return result
@@ -450,6 +444,9 @@ class SingleInverter(API):
         super().get_current_readings(raw=raw, retry=retry, maxretries=maxretries, delay=delay)
 
         # reduce self.data['inverter'] to a single dict from a list
+        if len(self.data.get("inverter", [])) == 0:
+            logging.debug("No inverter data found in %s", json.dumps(self.data))
+            raise ValueError("No inverter data found")
         self.data["inverter"] = self.data["inverter"][0]
 
         return self.data
