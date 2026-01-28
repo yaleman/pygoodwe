@@ -4,17 +4,13 @@ theme:
   name: "material"
 
 site_url: https://yaleman.github.io/pygoodwe/
-repo_name: 'yaleman/pygoodwe'
-repo_url: 'https://github.com/yaleman/pygoodwe'
+repo_name: "yaleman/pygoodwe"
+repo_url: "https://github.com/yaleman/pygoodwe"
 
 plugins:
-- search:
-- mkdocstrings:
-    default_handler: python
-    handlers:
-      # python:
-        # rendering:
-          # show_source: true
+  - search:
+  - mkdocstrings:
+      default_handler: python
 
 nav:
   - "Home": README.md
