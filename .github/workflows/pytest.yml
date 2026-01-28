@@ -3,7 +3,7 @@ name: pytest
 "on":
   push:
     branches:
-      - main  # Set a branch to deploy
+      - main # Set a branch to deploy
   pull_request:
 
 jobs:
@@ -12,13 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.2
         with:
-          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+          fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
       - name: Set up Python 3.12
         uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Running pytest
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         run: |
           python --version
           python -m pip install --quiet --no-cache-dir --upgrade uv
           uv run python -m pytest
+          uv run coveralls
