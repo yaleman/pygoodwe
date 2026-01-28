@@ -12,10 +12,15 @@ checks:
 	uv run mypy --strict tests pygoodwe
 	uv run pytest
 
+.PHONY run_coverage:
+run_coverage: ## Run tests with coverage
+run_coverage:
+	uv run coverage run --source=pygoodwe -m pytest tests/
+	uv run coverage report -m --format=markdown
+
 .PHONY: coverage
 coverage: ## Run tests with coverage
-coverage:
-	uv run coverage run --source=pygoodwe -m pytest tests/
+coverage: run_coverage
 	uv run coveralls
 
 .PHONY: docs
