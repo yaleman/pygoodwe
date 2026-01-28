@@ -15,6 +15,7 @@ checks:
 .PHONY: coverage
 coverage: ## Run tests with coverage
 coverage:
+	uv run coverage run --source=pygoodwe -m pytest tests/
 	uv run coveralls
 
 .PHONY: docs
