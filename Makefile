@@ -7,11 +7,23 @@ help:
 .PHONY: checks
 checks: ## Run linting etc
 checks:
-	uv run pytest
 	uv run ruff check tests pygoodwe
+	uv run ty check tests pygoodwe
 	uv run mypy --strict tests pygoodwe
+	uv run pytest
 
 .PHONY: coverage
 coverage: ## Run tests with coverage
 coverage:
-	uv run pytest --cov-report html --cov=pygoodwe tests
+	uv run coveralls
+
+.PHONY: docs
+docs: ## Build the documentation
+docs:
+	uv run mkdocs build
+
+
+.PHONY: docs_serve
+docs_serve: ## Serve the documentation locally
+docs_serve:
+	uv run mkdocs serve --livereload

@@ -1,9 +1,10 @@
+---
 name: MKDocs Deployment to GitHub Pages
 
 "on":
   push:
     branches:
-      - main  # Set a branch to deploy
+      - main
 
 jobs:
   mkdocs:
@@ -15,12 +16,10 @@ jobs:
     steps:
       - name: Checkout main
         uses: actions/checkout@v6.0.2
-        with:
-          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
-      - name: Set up Python 3.12
+      - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Running mkdocs
         run: |
           python -m pip install --quiet --no-cache-dir --upgrade uv
