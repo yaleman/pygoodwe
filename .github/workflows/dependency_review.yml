@@ -1,5 +1,7 @@
-name: 'Dependency Review'
-on: [pull_request]
+---
+name: "Dependency Review"
+"on":
+  pull_request:
 
 # https://github.com/actions/dependency-review-action
 
@@ -10,7 +12,7 @@ jobs:
   dependency-review:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout Repository'
-        uses: actions/checkout@v6.0.2
-      - name: 'Dependency Review'
+      - name: "Checkout Repository"
+        uses: actions/checkout@v6
+      - name: "Dependency Review"
         uses: actions/dependency-review-action@v4
