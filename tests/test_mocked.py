@@ -277,4 +277,5 @@ def test_get_power_station_power_report_by_month_success(
         )
         result = goodwe.getPowerStationPowerReportByMonth(date(2024, 1, 1))
         assert result == report_data
+        assert result is not None
         assert result["list"][0]["month_power"] == 688.0
