@@ -220,6 +220,27 @@ class API:
             return False
         return True
 
+    def getPowerStationPowerReportByMonth(
+        self,
+        report_date: date,
+        page_index: int = 1,
+        page_size: int = 8,
+    ) -> Optional[Dict[str, Any]]:
+        """retrieves the monthly power report for the given date
+
+        Returns a dict with keys like 'record', 'list' (per-station data
+        including month_power, avg_day_power, total_power), or None on failure.
+        """
+        month_str = report_date.strftime("%Y-%m")
+        payload = {
+            "date": month_str,
+            "pw_id": self.system_id,
+            "page_index": page_index,
+            "page_size": page_size,
+            "is_report": 1,
+        }
+        return self.call("v1/ReportData/GetPowerStationPowerReportByMonth", payload)
+
     def do_login(self, timeout: int = 10) -> bool:
         """does the login and token saving thing"""
         login_payload = {
