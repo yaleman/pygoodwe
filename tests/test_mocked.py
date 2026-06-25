@@ -245,3 +245,37 @@ def test_get_day_detailed_readings_excel_success(
         target = tmp_path / "output.xls"
         assert goodwe.getDayDetailedReadingsExcel(date(2024, 1, 2), filename=str(target))
         assert target.read_bytes() == b"binary"
+
+
+def test_get_power_station_power_report_by_month_success(
+    mocked_inverter: SingleInverter,
+) -> None:
+    goodwe = mocked_inverter
+    report_data = {
+        "record": 1,
+        "list": [
+            {
+                "pw_id": "1",
+                "pw_name": "Test Station",
+                "capacity": 6.0,
+                "address": "123 Fake St",
+                "owner_id": "u1",
+                "owner_name": "Test Owner",
+                "email": "owner@example.com",
+                "month_power": 688.0,
+                "avg_day_power": 22.2,
+                "total_power": 53159.2,
+                "power_list": None,
+            }
+        ],
+    }
+    with requests_mock.Mocker() as http_mock:
+        http_mock.post(
+            goodwe.base_url + "v1/ReportData/GetPowerStationPowerReportByMonth",
+            json={"msg": "success", "data": report_data},
+            status_code=200,
+        )
+        result = goodwe.getPowerStationPowerReportByMonth(date(2024, 1, 1))
+        assert result == report_data
+        assert result is not None
+        assert result["list"][0]["month_power"] == 688.0
