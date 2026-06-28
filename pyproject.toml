@@ -3,7 +3,7 @@
 name = "pygoodwe"
 version = "0.1.11"
 requires-python = "<4.0,>=3.12"
-dependencies = ["requests<3.0.0,>=2.28.1"]
+dependencies = ["requests<3.0.0,>=2.28.1", "httpx>=0.28.0"]
 description = "A command line tool and python library to query the GOODWE SEMS Portal APIs."
 authors = [{ name = "James Hodgkinson", email = "james@terminaloutcomes.com" }]
 license = "MIT"
@@ -32,6 +32,8 @@ dev = [
     "ruff==0.15.18",
     "types-requests>=2.28.11",
     "pytest>=9.0.2",
+    "pytest-asyncio>=0.26.0",
+    "respx>=0.22.0",
     "mypy>=1.19.1",
     "pylint-pytest>=1.1.2",
     "mkdocs>=1.4.2",
@@ -57,6 +59,9 @@ load-plugins = "pylint_pytest"
 
 [tool.ruff]
 line-length = 150
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [tool.mypy]
 strict = true
