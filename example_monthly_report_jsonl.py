@@ -2,7 +2,7 @@
 
 import json
 import sys
-from datetime import date, timedelta
+from datetime import UTC, datetime, timedelta
 
 try:
     from config import args
@@ -11,6 +11,7 @@ except ImportError:
     sys.exit(1)
 
 from pygoodwe import SingleInverter
+
 
 def main() -> None:
     station_id = args["gw_station_id"]
@@ -22,7 +23,7 @@ def main() -> None:
         print("Login failed", file=sys.stderr)
         sys.exit(1)
 
-    today = date.today()
+    today = datetime.now(tz=UTC).date()
     for i in range(6, 0, -1):
         day = today - timedelta(days=i * 30)
         month_str = day.strftime("%Y-%m")
@@ -31,6 +32,7 @@ def main() -> None:
             print(f"No data for {month_str}", file=sys.stderr)
             continue
         print(json.dumps({"month": month_str, "data": result}, default=str))
+
 
 if __name__ == "__main__":
     main()

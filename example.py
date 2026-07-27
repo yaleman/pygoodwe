@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """example script showing how you can run things"""
 
 import json
@@ -5,11 +6,10 @@ from functools import lru_cache
 
 # copy config.py.example to config.py and fill in your details
 from config import args
-
 from pygoodwe import SingleInverter
 
 
-@lru_cache()
+@lru_cache
 def get_single_inverter(args=args):  # pylint: disable=redefined-outer-name,dangerous-default-value
     """test fixture"""
     print("Single Inverter")

@@ -1,13 +1,12 @@
 """testing module"""
 
-from datetime import date, timedelta
 import logging
 import os
+from datetime import UTC, date, datetime, timedelta
 
 import pytest
 
 from pygoodwe import SingleInverter  # , POWERFLOW_STATUS_TEXT
-
 
 if os.getenv("LOG_LEVEL", "INFO") in ("DEBUG", "INFO", "WARNING"):
     log_level = getattr(logging, os.getenv("LOG_LEVEL", "INFO"))
@@ -33,12 +32,12 @@ if os.getenv("LOG_LEVEL", "INFO") in ("DEBUG", "INFO", "WARNING"):
 @pytest.fixture(scope="session")
 def inverter() -> SingleInverter:
     """used to start up the class"""
-    if os.environ.get("GOODWE_USE_CONFIG", False):
+    if os.environ.get("GOODWE_USE_CONFIG"):
         # pylint: disable=import-outside-toplevel
         try:
             from config import args
         except ImportError:
-            args = dict()
+            args = {}
             pytest.skip("Couldn't find config.py")
         print("Using config from config.py")
 
@@ -50,7 +49,7 @@ def inverter() -> SingleInverter:
         )
         assert goodweinverter.do_login()
 
-    elif os.environ.get("GOODWE_USERNAME", False):
+    elif os.environ.get("GOODWE_USERNAME"):
         print("Using Environment variables for config.")
         goodweinverter = SingleInverter(
             system_id=os.environ["GOODWE_SYSTEMID"],
@@ -160,7 +159,7 @@ def test_hjgx_exists(inverter: SingleInverter) -> None:
     #   "coal": 0.1960208
     # }
     if "hjgx" in inverter.data:
-        assert set(inverter.data["hjgx"].keys()) == set(["co2", "tree", "coal"])
+        assert set(inverter.data["hjgx"].keys()) == {"co2", "tree", "coal"}
 
 
 # print(json.dumps(gw.data['kpi'], indent=2))
@@ -189,8 +188,8 @@ def test_getDayDetailedReadingsExcel(
 ) -> None:
     """test downloading xls data"""
     filename = os.path.join(tmpdir_factory.mktemp("data"), "data.xls")
-    if os.environ.get("GOODWE_USE_CONFIG", False):
-        yesterday = date.today() - timedelta(days=1)
+    if bool(os.environ.get("GOODWE_USE_CONFIG")):
+        yesterday = datetime.now(tz=UTC).date() - timedelta(days=1)
         # yesterday_str = yesterday.strftime("%Y-%m-%d")
         assert inverter.getDayDetailedReadingsExcel(
             export_date=yesterday,
@@ -207,7 +206,7 @@ def test_getPowerStationPowerReportByMonth(
     inverter: SingleInverter,
 ) -> None:
     """monthly power report endpoint returns data for a known month"""
-    if not os.environ.get("GOODWE_USE_CONFIG", False):
+    if not bool(os.environ.get("GOODWE_USE_CONFIG")):
         pytest.skip()
     result = inverter.getPowerStationPowerReportByMonth(date(2024, 1, 1))
     assert result is not None
