@@ -1,8 +1,9 @@
-""" mocked tests """
-from datetime import date
+"""mocked tests"""
+
 import json
-from pathlib import Path
 import time
+from datetime import date
+from pathlib import Path
 
 import pytest
 import requests
@@ -164,7 +165,7 @@ def test_get_current_readings_missing_inverter_exits(monkeypatch: pytest.MonkeyP
 
 
 def test_parse_value_invalid_returns_zero() -> None:
-    assert API.parseValue("not-a-number", "W") == 0.0
+    assert API("1", "user", "pass", skipload=True).parseValue("not-a-number", "W") == 0.0
 
 
 def test_single_inverter_load_flow_branches(mocked_inverter: SingleInverter) -> None:
