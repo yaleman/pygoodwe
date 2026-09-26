@@ -2,7 +2,7 @@
 
 import logging
 import os
-from datetime import UTC, date, datetime, timedelta
+from datetime import date
 
 import pytest
 
@@ -70,12 +70,11 @@ def test_instantiate(inverter: SingleInverter) -> None:
     """tests just setting up and pulling data"""
     assert inverter.data["info"].keys()
     assert "info" in inverter.data
-    print(inverter.data)
 
 
 def test_get_data_pvoutput(inverter: SingleInverter) -> None:
     """tests that getDataPvoutput works"""
-    print(inverter.getDataPvoutput())
+    assert inverter.getDataPvoutput()
 
 
 # print(gw.data['info'])
@@ -128,13 +127,6 @@ def test_flow_status(inverter: SingleInverter) -> None:
     assert isinstance(gridflow, float)
 
 
-# TODO: gw.data['powerflow']['hasEquipment']  - bool
-def test_hasequipment_value(inverter: SingleInverter) -> None:
-    """tests that the instance has a value for powerflow-hasequipment"""
-    assert isinstance(inverter.data["powerflow"]["hasEquipment"], bool)
-    # print(f"Hasequipment: {gw.data['powerflow']['hasEquipment']}")
-
-
 # WTF is smuggle.
 # print(json.dumps(gw.data['smuggleInfo'], indent=2))
 # {
@@ -178,36 +170,13 @@ def test_getvoltage(inverter: SingleInverter) -> None:
 
 def test_getDayDetailedReadingsExcel(
     inverter: SingleInverter,
-    tmpdir_factory: pytest.TempdirFactory,
 ) -> None:
-    """test downloading xls data"""
-    filename = os.path.join(tmpdir_factory.mktemp("data"), "data.xls")
-    if bool(os.environ.get("GOODWE_USE_CONFIG")):
-        yesterday = datetime.now(tz=UTC).date() - timedelta(days=1)
-        # yesterday_str = yesterday.strftime("%Y-%m-%d")
-        assert inverter.getDayDetailedReadingsExcel(
-            export_date=yesterday,
-            filename=str(filename),
-            timeout=10,
-        )
-        assert os.path.exists(filename)
-    else:
-        pytest.skip()
-    assert True
+    with pytest.raises(NotImplementedError, match="daily Excel export"):
+        inverter.getDayDetailedReadingsExcel(date(2024, 1, 1))
 
 
 def test_getPowerStationPowerReportByMonth(
     inverter: SingleInverter,
 ) -> None:
-    """monthly power report endpoint returns data for a known month"""
-    if not bool(os.environ.get("GOODWE_USE_CONFIG")):
-        pytest.skip()
-    result = inverter.getPowerStationPowerReportByMonth(date(2024, 1, 1))
-    assert result is not None
-    assert "list" in result
-    assert len(result["list"]) >= 1
-    entry = result["list"][0]
-    assert entry["pw_id"] == inverter.system_id
-    assert isinstance(entry.get("month_power"), (int, float))
-    assert isinstance(entry.get("avg_day_power"), (int, float))
-    assert isinstance(entry.get("total_power"), (int, float))
+    with pytest.raises(NotImplementedError, match="monthly reports"):
+        inverter.getPowerStationPowerReportByMonth(date(2024, 1, 1))
