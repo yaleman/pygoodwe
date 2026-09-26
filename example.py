@@ -10,7 +10,7 @@ from pygoodwe import SingleInverter
 
 
 @lru_cache
-def get_single_inverter(args=args):  # pylint: disable=redefined-outer-name,dangerous-default-value
+def get_single_inverter(args=args):
     """test fixture"""
     print("Single Inverter")
     goodwe = SingleInverter(

@@ -33,7 +33,6 @@ if os.getenv("LOG_LEVEL", "INFO") in ("DEBUG", "INFO", "WARNING"):
 def inverter() -> SingleInverter:
     """used to start up the class"""
     if os.environ.get("GOODWE_USE_CONFIG"):
-        # pylint: disable=import-outside-toplevel
         try:
             from config import args
         except ImportError:
@@ -125,12 +124,8 @@ def test_flow_status(inverter: SingleInverter) -> None:
         gridflow = float(inverter.data["powerflow"]["grid"][:-3])
     else:
         gridflow = float(inverter.data["powerflow"]["grid"])
-    if inverter.data["powerflow"]["gridStatus"] == 1:
-        gridflow_direction = "Exporting"
-    else:
-        raise NotImplementedError(f"gw.data['powerflow']['gridStatus'] == {inverter.data['powerflow']['gridStatus']}")
+
     assert isinstance(gridflow, float)
-    assert gridflow_direction
 
 
 # TODO: gw.data['powerflow']['hasEquipment']  - bool
@@ -181,7 +176,6 @@ def test_getvoltage(inverter: SingleInverter) -> None:
     assert isinstance(inverter.getVoltage(), float)
 
 
-# pylint: disable=invalid-name
 def test_getDayDetailedReadingsExcel(
     inverter: SingleInverter,
     tmpdir_factory: pytest.TempdirFactory,

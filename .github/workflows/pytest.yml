@@ -4,7 +4,7 @@ name: pytest
 "on":
   push:
     branches:
-      - main # Set a branch to deploy
+      - main
   pull_request:
 
 jobs:

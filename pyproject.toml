@@ -29,11 +29,8 @@ repository = "https://github.com/yaleman/pygoodwe"
 
 [dependency-groups]
 dev = [
-    "ruff==0.16.8",
-    "types-requests>=2.28.11",
+    "ruff>=0.16.9",
     "pytest>=9.0.2",
-    "mypy>=1.19.1",
-    "pylint-pytest>=1.1.2",
     "mkdocs>=1.4.2",
     "mkdocs-material>=9.0.2",
     "mkdocstrings>=1.0.2",
@@ -41,7 +38,7 @@ dev = [
     "requests-mock>=1.11.0",
     "validate-pyproject>=0.16",
     "pytest-cov>=7.0.0",
-    "ty>=0.0.0a7",
+    "ty>=0.0.84",
     "coveralls>=4.0.1",
 ]
 
@@ -50,13 +47,5 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 
-[tool.pylint.MASTER]
-disable = "W0511"
-max-line-length = 150
-load-plugins = "pylint_pytest"
-
 [tool.ruff]
 line-length = 150
-
-[tool.mypy]
-strict = true

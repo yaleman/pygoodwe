@@ -1,5 +1,5 @@
 ---
-name: mypy
+name: Python type checking
 
 "on":
   push:
@@ -8,7 +8,7 @@ name: mypy
   pull_request:
 
 jobs:
-  mypy:
+  mypy: # don't rename, is referred to in branch rules etc
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -16,9 +16,8 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - name: Running mypy
+      - name: Running type checking
         run: |
           echo 'args = {}' > config.py
           python -m pip install --quiet --no-cache-dir --upgrade uv
-          uv run mypy $(basename $(pwd) | sed -E 's/-/_/g') tests/ examples/
           uv run ty check

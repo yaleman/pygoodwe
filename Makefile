@@ -7,9 +7,8 @@ help:
 .PHONY: checks
 checks: ## Run linting etc
 checks:
-	uv run ruff check tests pygoodwe
-	uv run ty check tests pygoodwe
-	uv run mypy --strict tests pygoodwe
+	uv run ruff check
+	uv run ty check
 	uv run pytest
 
 .PHONY run_coverage:

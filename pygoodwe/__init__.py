@@ -27,7 +27,6 @@ SUCCESS_MESSAGES = ("success", "successful", "操作成功")
 class API:
     """API implementation"""
 
-    # pylint: disable=too-many-instance-attributes,too-many-arguments
     def __init__(
         self,
         system_id: str,
@@ -91,7 +90,7 @@ class API:
         retry: int = 1,
         maxretries: int = 5,
         delay: int = 30,
-    ) -> dict[str, Any]:  # pylint: disable=invalid-name
+    ) -> dict[str, Any]:
         """gets readings at the current point in time"""
         payload = {"powerStationId": self.system_id}
 
@@ -112,61 +111,6 @@ class API:
     # stub function names to old names
     getCurrentReadings = get_current_readings
 
-    # def getDayReadings(self, date):
-    #     date_s = date.strftime('%Y-%m-%d')
-    #     payload = {
-    #         'powerStationId' : self.system_id
-    #     }
-    #     data = self.call("v2/PowerStation/GetMonitorDetailByPowerstationId", payload)
-    #     if 'info' not in data:
-    #     logging.warning(date_s + " - Received bad data " + str(data))
-    #         return result
-    #     result = {
-    #         'latitude' : data['info'].get('latitude'),
-    #         'longitude' : data['info'].get('longitude'),
-    #         'entries' : []
-    #     }
-    #     payload = {
-    #         'powerstation_id' : self.system_id,
-    #         'count' : 1,
-    #         'date' : date_s
-    #     }
-    #     data = self.call("PowerStationMonitor/GetPowerStationPowerAndIncomeByDay", payload)
-    #     if len(data) == 0:
-    #         logging.warning(date_s + " - Received bad data " + str(data))
-    #         return result
-    #     eday_kwh = data[0]['p']
-    #     payload = {
-    #         'id' : self.system_id,
-    #         'date' : date_s
-    #     }
-    #     data = self.call("PowerStationMonitor/GetPowerStationPacByDayForApp", payload)
-    #     if 'pacs' not in data:
-    #         logging.warning(date_s + " - Received bad data " + str(data))
-    #         return result
-    #     minutes = 0
-    #     eday_from_power = 0
-    #     for sample in data['pacs']:
-    #         parsed_date = datetime.strptime(sample['date'], "%m/%d/%Y %H:%M:%S")
-    #         next_minutes = parsed_date.hour * 60 + parsed_date.minute
-    #         sample['minutes'] = next_minutes - minutes
-    #         minutes = next_minutes
-    #         eday_from_power += sample['pac'] * sample['minutes']
-    #     factor = eday_kwh / eday_from_power if eday_from_power > 0 else 1
-    #     eday_kwh = 0
-    #     for sample in data['pacs']:
-    #         date += timedelta(minutes=sample['minutes'])
-    #         pgrid_w = sample['pac']
-    #         increase = pgrid_w * sample['minutes'] * factor
-    #         if increase > 0:
-    #             eday_kwh += increase
-    #             result['entries'].append({
-    #                 'dt' : date,
-    #                 'pgrid_w': pgrid_w,
-    #                 'eday_kwh': round(eday_kwh, 3)
-    #             })
-    #     return result
-
     @property
     def headers(self) -> dict[str, str]:
         """request headers"""
@@ -175,7 +119,6 @@ class API:
             "Token": self.token,
         }
 
-    # pylint: disable=invalid-name
     def getDayDetailedReadingsExcel(
         self,
         export_date: date,
@@ -280,7 +223,7 @@ class API:
         payload: Any,
         max_tries: int = 3,
         timeout: int = 10,
-    ) -> dict[str, Any]:  # pylint: disable=unused-argument
+    ) -> dict[str, Any]:
         """makes a call to the API"""
         for i in range(1, max_tries):
             try:
@@ -301,7 +244,7 @@ class API:
 
                 # APIs return "success", "Success", "Successful" in the 'msg'
                 # seen "Successful" in ExportPowerStationPac
-                if data.get("msg", "").lower() in SUCCESS_MESSAGES and "data" in data:  # pylint: disable=no-else-return
+                if data.get("msg", "").lower() in SUCCESS_MESSAGES and "data" in data:
                     self.logger.debug("Returning data: %s", json.dumps(data["data"], default=str))
                     result: dict[str, Any] = data.get("data")
                     return result
@@ -319,7 +262,7 @@ class API:
         self.logger.error("Failed to call GoodWe API url='%s'", self.base_url + url)
         return {}
 
-    def parseValue(self, value: str, unit: str) -> float:  # pylint: disable=invalid-name
+    def parseValue(self, value: str, unit: str) -> float:
         """takes a string value and reutrns it as a float (if possible)"""
         try:
             return float(value.rstrip(unit))
@@ -353,11 +296,11 @@ class API:
         """return the battery state of charge"""
         return self._get_batteries_soc()
 
-    def getPVFlow(self) -> float:  # pylint: disable=invalid-name
+    def getPVFlow(self) -> float:
         """PV flow data"""
         raise NotImplementedError("SingleInverter has this, multi does not")
 
-    def getVoltage(self) -> list[float] | float:  # pylint: disable=invalid-name
+    def getVoltage(self) -> list[float] | float:
         """returns the a list of the first AC channel voltages"""
         if not self.data:
             self.getCurrentReadings(True)
@@ -365,13 +308,13 @@ class API:
             raise ValueError("Couldn't get data...")
         return [float(inverter.get("invert_full", {}).get("vac1")) for inverter in self.data["inverter"]]
 
-    def getPmeter(self) -> float:  # pylint: disable=invalid-name
+    def getPmeter(self) -> float:
         """gets the current line pmeter"""
         if not self.data:
             self.getCurrentReadings()
         return float(self.data.get("inverter", {}).get("invert_full", {}).get("pmeter"))
 
-    def getLoadFlow(self) -> list[float] | float:  # pylint: disable=invalid-name
+    def getLoadFlow(self) -> list[float] | float:
         """returns the list of inverter multi-unit load watts"""
         raise NotImplementedError("multi-unit load watts isn't implemented yet")
 
@@ -385,7 +328,7 @@ class API:
 
     def getDataPvoutput(
         self,
-    ) -> dict[str, str | float]:  # pylint: disable=invalid-name
+    ) -> dict[str, str | float]:
         """updates and returns the data necessary for a one-shot pvoutput upload
         'd' : testdate.strftime("%Y%m%d"),
         't' : testtime.strftime("%H:%M"),
@@ -425,7 +368,6 @@ class API:
 class SingleInverter(API):
     """API implementation for an account with a single inverter"""
 
-    # pylint: disable=too-many-arguments
     def __init__(
         self,
         system_id: str,
@@ -538,7 +480,7 @@ class SingleInverter(API):
         elif self.data["powerflow"]["loadStatus"] == 1:
             loadflow_direction = "Using Battery"
         else:
-            raise ValueError(f"Your 'load' is doing something odd - status is '{self.data['powerflow']['loadStatus']}''.")  # pylint: disable=line-too-long
+            raise ValueError(f"Your 'load' is doing something odd - status is '{self.data['powerflow']['loadStatus']}''.")
         self.loadflow = loadflow
         self.loadflow_direction = loadflow_direction
         return loadflow
@@ -564,7 +506,7 @@ class SingleInverter(API):
 
     def getDataPvoutput(
         self,
-    ) -> dict[str, str | float]:  # pylint: disable=invalid-name
+    ) -> dict[str, str | float]:
         """updates and returns the data necessary for a one-shot pvoutput upload
         'd' : testdate.strftime("%Y%m%d"),
         't' : testtime.strftime("%H:%M"),
