@@ -49,3 +49,6 @@ build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 150
+
+[tool.ruff.lint.isort]
+known-first-party = ["config"]
