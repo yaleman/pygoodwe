@@ -1,7 +1,6 @@
 """mocked tests"""
 
 import json
-import time
 from datetime import date
 from pathlib import Path
 
@@ -10,6 +9,7 @@ import requests
 import requests_mock
 
 from pygoodwe import API, SingleInverter
+from pygoodwe.sems_plus import LOGIN_URL, FailureKind, SemsPlusError
 
 
 @pytest.fixture()
@@ -30,138 +30,90 @@ def mocked_inverter(
     return goodwe
 
 
-def test_login_fail(
+def test_login_fail_has_no_classic_fallback(
     mocked_session: tuple[requests.Session, requests_mock.Adapter],
     mocked_inverter: SingleInverter,
 ) -> None:
-    fail_response_body = """{
-  "hasError": false,
-  "code": 100005,
-  "msg": "Email or password error.",
-  "data": null,
-  "components": {
-    "para": null,
-    "langVer": 179,
-    "timeSpan": 0,
-    "api": "http://semsportal.com:85/api/v2/Common/CrossLogin",
-    "msgSocketAdr": "https://eu-xxzx.semsportal.com"
-  }
-}"""
-    # login detail don't matter as we're mocking it
-    print("setting up api")
-    goodwe = mocked_inverter
-
-    print("setting up session mock")
     session, adapter = mocked_session
+    adapter.register_uri("POST", LOGIN_URL, json={"code": "C0602", "data": None})
+    mocked_inverter.session = session
 
-    adapter.register_uri(
-        method="POST",
-        url=goodwe.global_url + "v2/Common/CrossLogin",
-        json=json.loads(fail_response_body),
-        status_code=200,
-    )
-    goodwe.session = session
-
-    login_result = goodwe.do_login()
-
-    print(f"{login_result=}")
-    print(f"{adapter.request_history=}")
-    assert not login_result
+    assert not mocked_inverter.do_login()
+    assert [request.url for request in adapter.request_history] == [LOGIN_URL]
 
 
-def test_login_success_sets_base_url_and_token(
+def test_login_success_uses_web_token_and_gateway(
     mocked_session: tuple[requests.Session, requests_mock.Adapter],
     mocked_inverter: SingleInverter,
 ) -> None:
-    success_body = {
-        "hasError": False,
-        "code": 0,
-        "msg": "success",
-        "data": {"token": "abc123"},
-        "api": "https://example.semsportal.com/api/",
-    }
-    goodwe = mocked_inverter
     session, adapter = mocked_session
-    adapter.register_uri(
-        method="POST",
-        url=goodwe.global_url + "v2/Common/CrossLogin",
-        json=success_body,
-        status_code=200,
-    )
-    goodwe.session = session
+    token = {"uid": "u1", "token": "secret", "client": "semsPlusWeb"}
+    adapter.register_uri("POST", LOGIN_URL, json={"code": 0, "data": token})
+    mocked_inverter.session = session
 
-    assert goodwe.do_login()
-    assert goodwe.base_url == "https://example.semsportal.com/api/"
-    assert goodwe.token == json.dumps(success_body["data"])
+    assert mocked_inverter.do_login()
+    assert mocked_inverter.token == json.dumps(token)
+    assert mocked_inverter.headers["Token"] == json.dumps(token)
+    assert mocked_inverter.base_url == "https://eu-gateway.semsportal.com/web/sems"
+    assert [request.url for request in adapter.request_history] == [LOGIN_URL]
 
 
-def test_login_request_exception(
+def test_readings_failure_has_no_classic_fallback(
     mocked_session: tuple[requests.Session, requests_mock.Adapter],
     mocked_inverter: SingleInverter,
 ) -> None:
-    goodwe = mocked_inverter
     session, adapter = mocked_session
-    adapter.register_uri(
-        method="POST",
-        url=goodwe.global_url + "v2/Common/CrossLogin",
-        exc=requests.exceptions.ConnectTimeout,
-    )
-    goodwe.session = session
+    adapter.register_uri("POST", LOGIN_URL, json={"code": "C0602", "data": None})
+    mocked_inverter.session = session
 
-    assert not goodwe.do_login()
-
-
-def test_call_success_message_returns_data(
-    mocked_session: tuple[requests.Session, requests_mock.Adapter],
-    mocked_inverter: SingleInverter,
-) -> None:
-    goodwe = mocked_inverter
-    session, adapter = mocked_session
-    adapter.register_uri(
-        method="POST",
-        url=goodwe.base_url + "v2/PowerStation/GetMonitorDetailByPowerstationId",
-        json={"msg": "Success", "data": {"info": {"stationname": "Test"}}},
-        status_code=200,
-    )
-    goodwe.session = session
-
-    data = goodwe.call("v2/PowerStation/GetMonitorDetailByPowerstationId", {"powerStationId": "1"})
-    assert data == {"info": {"stationname": "Test"}}
+    with pytest.raises(SemsPlusError) as failure:
+        mocked_inverter.get_current_readings()
+    assert failure.value.kind is FailureKind.AUTH
+    assert [request.url for request in adapter.request_history] == [LOGIN_URL]
 
 
-def test_call_relogin_then_success(
-    monkeypatch: pytest.MonkeyPatch,
-    mocked_session: tuple[requests.Session, requests_mock.Adapter],
-    mocked_inverter: SingleInverter,
-) -> None:
-    goodwe = mocked_inverter
-    session, adapter = mocked_session
-    adapter.register_uri(
-        method="POST",
-        url=goodwe.base_url + "v2/PowerStation/GetMonitorDetailByPowerstationId",
-        response_list=[
-            {"json": {"msg": "something else"}, "status_code": 200},
-            {"json": {"msg": "success", "data": {"ok": True}}, "status_code": 200},
-        ],
-    )
-    adapter.register_uri(
-        method="POST",
-        url=goodwe.global_url + "v2/Common/CrossLogin",
-        json={"code": 0, "msg": "success", "data": {"token": "t"}},
-        status_code=200,
-    )
-    goodwe.session = session
-    monkeypatch.setattr(time, "sleep", lambda *_args, **_kwargs: None)
-
-    data = goodwe.call("v2/PowerStation/GetMonitorDetailByPowerstationId", {"powerStationId": "1"})
-    assert data == {"ok": True}
+def test_legacy_call_is_explicitly_unsupported(mocked_inverter: SingleInverter) -> None:
+    with pytest.raises(NotImplementedError, match="Classic API routes"):
+        mocked_inverter.call("v2/PowerStation/GetMonitorDetailByPowerstationId", {})
 
 
-def test_get_current_readings_missing_inverter_exits(monkeypatch: pytest.MonkeyPatch) -> None:
-    goodwe = API("1", "user", "pass", skipload=True)
-    monkeypatch.setattr(goodwe, "call", lambda *_args, **_kwargs: {"info": {"stationname": "Test"}})
-    with pytest.raises(SystemExit):
-        goodwe.get_current_readings(retry=5, maxretries=5)
+def test_no_inverter_response_uses_existing_retry_arguments(monkeypatch: pytest.MonkeyPatch) -> None:
+    api = API("station", "user", "password", skipload=True)
+
+    class EmptyThenReady:
+        api_base = "https://gateway.example.com/web/sems"
+
+        def __init__(self) -> None:
+            self.token = {"token": "ready"}
+            self.attempts = 0
+
+        def readings(self, _station_id: str) -> dict[str, object]:
+            self.attempts += 1
+            if self.attempts < 3:
+                raise SemsPlusError(FailureKind.NO_INVERTERS, "no inverters")
+            return {"inverter": [{"sn": "SN1"}]}
+
+    client = EmptyThenReady()
+    waits: list[int] = []
+    monkeypatch.setattr(api, "_web_client", lambda: client)
+    monkeypatch.setattr("pygoodwe.time.sleep", waits.append)
+
+    assert api.get_current_readings(maxretries=3, delay=7)["inverter"] == [{"sn": "SN1"}]
+    assert client.attempts == 3
+    assert waits == [7, 7]
+
+
+def test_no_inverter_response_stops_at_retry_limit(monkeypatch: pytest.MonkeyPatch) -> None:
+    api = API("station", "user", "password", skipload=True)
+
+    class AlwaysEmpty:
+        def readings(self, _station_id: str) -> dict[str, object]:
+            raise SemsPlusError(FailureKind.NO_INVERTERS, "no inverters")
+
+    monkeypatch.setattr(api, "_web_client", lambda: AlwaysEmpty())
+    with pytest.raises(SemsPlusError) as failure:
+        api.get_current_readings(retry=5, maxretries=5)
+    assert failure.value.kind is FailureKind.NO_INVERTERS
 
 
 def test_parse_value_invalid_returns_zero() -> None:
@@ -224,59 +176,8 @@ def test_single_inverter_loaddata_reduces_inverter(
     assert mocked_inverter.data["inverter"]["invert_full"]["vac1"] == "230"
 
 
-def test_get_day_detailed_readings_excel_success(
-    tmp_path: Path,
-    mocked_inverter: SingleInverter,
-) -> None:
-    goodwe = mocked_inverter
-    export_id = "export-id"
-
-    with requests_mock.Mocker() as http_mock:
-        http_mock.post(
-            goodwe.base_url + "v1/PowerStation/ExportPowerstationPac",
-            json={"msg": "success", "data": export_id},
-            status_code=200,
-        )
-        http_mock.post(
-            goodwe.base_url + "v1/ReportData/GetStationPowerDataFilePath",
-            json={"msg": "success", "data": {"file_path": "https://files.example.com/file.xls"}},
-            status_code=200,
-        )
-        http_mock.get("https://files.example.com/file.xls", content=b"binary")
-        target = tmp_path / "output.xls"
-        assert goodwe.getDayDetailedReadingsExcel(date(2024, 1, 2), filename=str(target))
-        assert target.read_bytes() == b"binary"
-
-
-def test_get_power_station_power_report_by_month_success(
-    mocked_inverter: SingleInverter,
-) -> None:
-    goodwe = mocked_inverter
-    report_data = {
-        "record": 1,
-        "list": [
-            {
-                "pw_id": "1",
-                "pw_name": "Test Station",
-                "capacity": 6.0,
-                "address": "123 Fake St",
-                "owner_id": "u1",
-                "owner_name": "Test Owner",
-                "email": "owner@example.com",
-                "month_power": 688.0,
-                "avg_day_power": 22.2,
-                "total_power": 53159.2,
-                "power_list": None,
-            }
-        ],
-    }
-    with requests_mock.Mocker() as http_mock:
-        http_mock.post(
-            goodwe.base_url + "v1/ReportData/GetPowerStationPowerReportByMonth",
-            json={"msg": "success", "data": report_data},
-            status_code=200,
-        )
-        result = goodwe.getPowerStationPowerReportByMonth(date(2024, 1, 1))
-        assert result == report_data
-        assert result is not None
-        assert result["list"][0]["month_power"] == 688.0
+def test_report_and_export_fail_without_classic_requests(mocked_inverter: SingleInverter) -> None:
+    with pytest.raises(NotImplementedError, match="daily Excel export"):
+        mocked_inverter.getDayDetailedReadingsExcel(date(2024, 1, 2))
+    with pytest.raises(NotImplementedError, match="monthly reports"):
+        mocked_inverter.getPowerStationPowerReportByMonth(date(2024, 1, 1))

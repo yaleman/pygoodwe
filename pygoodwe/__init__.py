@@ -3,31 +3,26 @@
 import json
 import logging
 import os
-import sys
 import time
 from datetime import date, datetime
-from pathlib import Path
 from typing import Any
 
-import requests
-import requests.exceptions
 from requests.sessions import Session
+
+from .sems_plus import GATEWAY_URL, WEB_USER_AGENT, FailureKind, SemsPlusClient, SemsPlusError
 
 __version__ = "0.0.17"
 
 POWERFLOW_STATUS_TEXT = {
     -1: "Outward",
 }
-DEFAULT_UA = "PVMaster/2.0.4 (iPhone; iOS 11.4.1; Scale/2.00)"
-API_URL = "https://semsportal.com/api/"
-
-SUCCESS_MESSAGES = ("success", "successful", "操作成功")
+DEFAULT_UA = WEB_USER_AGENT
+API_URL = GATEWAY_URL
 
 
 class API:
     """API implementation"""
 
-    # pylint: disable=too-many-instance-attributes,too-many-arguments
     def __init__(
         self,
         system_id: str,
@@ -42,7 +37,8 @@ class API:
         Options:
 
         skipload: don't run self.getCurrentReadings() on init
-        api_url: you can change the API endpoint it hits
+        api_url and user_agent are retained for constructor compatibility.
+        SEMS+ selects its authenticated gateway and request headers.
         """
         # TODO: lang: Real Soon Now it'll filter out any responses without that language
 
@@ -61,14 +57,13 @@ class API:
             )
         self.logger = logging.getLogger(__name__)
         self.session = Session()
+        self._sems_plus: SemsPlusClient | None = None
         self.system_id = system_id
         self.account = account
         self.password = password
-        self.token = '{"version":"v2.0.4","client":"ios","language":"en"}'
+        self.token = ""
         self.global_url = api_url
         self.base_url = self.global_url
-
-        self.logger.debug("API URL: %s", self.base_url)
 
         self.user_agent = user_agent
 
@@ -91,135 +86,40 @@ class API:
         retry: int = 1,
         maxretries: int = 5,
         delay: int = 30,
-    ) -> dict[str, Any]:  # pylint: disable=invalid-name
+    ) -> dict[str, Any]:
         """gets readings at the current point in time"""
-        payload = {"powerStationId": self.system_id}
-
-        # GOODWE server
-        self.data = self.call("v2/PowerStation/GetMonitorDetailByPowerstationId", payload)
-
-        retval = self.data
-
-        if not self.data.get("inverter"):
-            if retry < maxretries:
-                self.logger.error("no inverter data, try %s, trying again in %s seconds", retry, delay)
+        client = self._web_client()
+        while True:
+            try:
+                self.data = client.readings(self.system_id)
+                break
+            except SemsPlusError as exc:
+                if exc.kind is not FailureKind.NO_INVERTERS or retry >= maxretries:
+                    raise
+                self.logger.warning("SEMS+ returned no inverters; retrying in %s seconds", delay)
                 time.sleep(delay)
-                return self.get_current_readings(raw=raw, retry=retry + 1, maxretries=maxretries, delay=delay)
-            self.logger.error("No inverter data after %s retries, quitting.", retry)
-            sys.exit(f"No inverter data after {retry} retries, quitting.")
-        return retval
+                retry += 1
+        self.token = json.dumps(client.token)
+        self.base_url = client.api_base
+        return self.data
 
     # stub function names to old names
     getCurrentReadings = get_current_readings
 
-    # def getDayReadings(self, date):
-    #     date_s = date.strftime('%Y-%m-%d')
-    #     payload = {
-    #         'powerStationId' : self.system_id
-    #     }
-    #     data = self.call("v2/PowerStation/GetMonitorDetailByPowerstationId", payload)
-    #     if 'info' not in data:
-    #     logging.warning(date_s + " - Received bad data " + str(data))
-    #         return result
-    #     result = {
-    #         'latitude' : data['info'].get('latitude'),
-    #         'longitude' : data['info'].get('longitude'),
-    #         'entries' : []
-    #     }
-    #     payload = {
-    #         'powerstation_id' : self.system_id,
-    #         'count' : 1,
-    #         'date' : date_s
-    #     }
-    #     data = self.call("PowerStationMonitor/GetPowerStationPowerAndIncomeByDay", payload)
-    #     if len(data) == 0:
-    #         logging.warning(date_s + " - Received bad data " + str(data))
-    #         return result
-    #     eday_kwh = data[0]['p']
-    #     payload = {
-    #         'id' : self.system_id,
-    #         'date' : date_s
-    #     }
-    #     data = self.call("PowerStationMonitor/GetPowerStationPacByDayForApp", payload)
-    #     if 'pacs' not in data:
-    #         logging.warning(date_s + " - Received bad data " + str(data))
-    #         return result
-    #     minutes = 0
-    #     eday_from_power = 0
-    #     for sample in data['pacs']:
-    #         parsed_date = datetime.strptime(sample['date'], "%m/%d/%Y %H:%M:%S")
-    #         next_minutes = parsed_date.hour * 60 + parsed_date.minute
-    #         sample['minutes'] = next_minutes - minutes
-    #         minutes = next_minutes
-    #         eday_from_power += sample['pac'] * sample['minutes']
-    #     factor = eday_kwh / eday_from_power if eday_from_power > 0 else 1
-    #     eday_kwh = 0
-    #     for sample in data['pacs']:
-    #         date += timedelta(minutes=sample['minutes'])
-    #         pgrid_w = sample['pac']
-    #         increase = pgrid_w * sample['minutes'] * factor
-    #         if increase > 0:
-    #             eday_kwh += increase
-    #             result['entries'].append({
-    #                 'dt' : date,
-    #                 'pgrid_w': pgrid_w,
-    #                 'eday_kwh': round(eday_kwh, 3)
-    #             })
-    #     return result
-
     @property
     def headers(self) -> dict[str, str]:
-        """request headers"""
-        return {
-            "User-Agent": self.user_agent,
-            "Token": self.token,
-        }
+        """Authenticated SEMS+ headers, excluding the changing signature."""
+        token = self._web_client().token
+        return {"User-Agent": WEB_USER_AGENT, "Token": json.dumps(token) if token is not None else ""}
 
-    # pylint: disable=invalid-name
     def getDayDetailedReadingsExcel(
         self,
         export_date: date,
         timeout: int = 10,
         filename: str | None = None,
     ) -> bool:
-        """retrieves the detailed daily results of the given date as an Excel sheet,
-        processing the Excel sheet is outside the scope of the current module,
-        possible args:
-        - filename: the path where to write the output file, default "./Plant_Power_{datestr}.xls
-        """
-        datestr = export_date.strftime("%Y-%m-%d")
-        if filename is None:
-            filename = f"Plant_Power_{datestr}.xls"
-        self.logger.debug("Will write data for %s to file: %s", datestr, filename)
-
-        uri = "v1/PowerStation/ExportPowerstationPac"
-        # {"api":"v2/PowerStation/ExportPowerstationPac","param":{"date":"2021-12-20","pw_id":"<my-pw-id>"
-        payload_export = {
-            "date": datestr,
-            "pw_id": self.system_id,
-        }
-
-        data = self.call(uri, payload=payload_export)
-
-        payload_get_url = {"id": data}
-        get_url_uri = "v1/ReportData/GetStationPowerDataFilePath"
-        data = self.call(get_url_uri, payload=payload_get_url)
-
-        file_url = data.get("file_path")
-        if file_url is None:
-            self.logger.error("Failed to get file path from ")
-            return False
-
-        response = requests.get(file_url, timeout=timeout)
-        response.raise_for_status()
-
-        try:
-            file_download_path = Path(filename)
-            file_download_path.write_bytes(response.content)
-        except Exception as error_message:  # noqa: BLE001
-            self.logger.error("Failed to write file %s! Error: %s", filename, error_message)
-            return False
-        return True
+        """Retained interface; SEMS+ Excel export is not implemented."""
+        raise NotImplementedError("SEMS+ daily Excel export is not implemented")
 
     def getPowerStationPowerReportByMonth(
         self,
@@ -227,52 +127,27 @@ class API:
         page_index: int = 1,
         page_size: int = 8,
     ) -> dict[str, Any] | None:
-        """retrieves the monthly power report for the given date
+        """Retained interface; SEMS+ monthly reports are not implemented."""
+        raise NotImplementedError("SEMS+ monthly reports are not implemented")
 
-        Returns a dict with keys like 'record', 'list' (per-station data
-        including month_power, avg_day_power, total_power), or None on failure.
-        """
-        month_str = report_date.strftime("%Y-%m")
-        payload = {
-            "date": month_str,
-            "pw_id": self.system_id,
-            "page_index": page_index,
-            "page_size": page_size,
-            "is_report": 1,
-        }
-        return self.call("v1/ReportData/GetPowerStationPowerReportByMonth", payload)
+    def _web_client(self) -> SemsPlusClient:
+        if self._sems_plus is None or self._sems_plus.session is not self.session:
+            self._sems_plus = SemsPlusClient(self.session, self.account, self.password, self.logger)
+        return self._sems_plus
 
     def do_login(self, timeout: int = 10) -> bool:
-        """does the login and token saving thing"""
-        login_payload = {
-            "account": self.account,
-            "pwd": self.password,
-        }
+        """Authenticate with SEMS+ Web."""
         try:
-            response = self.session.post(
-                self.global_url + "v2/Common/CrossLogin",
-                headers=self.headers,
-                data=login_payload,
-                timeout=timeout,
-            )
-            response.raise_for_status()
-        except requests.exceptions.RequestException as exp:
-            self.logger.error("RequestException during do_login(): %s", exp)
-            print(f"{exp=}")
+            client = self._web_client()
+            client.login(timeout)
+            self.token = json.dumps(client.token)
+            self.base_url = client.api_base
+            return True
+        except SemsPlusError as exc:
+            if exc.kind is FailureKind.RATE_LIMIT:
+                raise
+            self.logger.error("SEMS+ login failed (%s)", exc.kind.value)
             return False
-
-        data = response.json()
-        if data.get("code") != 0:
-            self.logger.error("Failed to log in: %s", data.get("msg"))
-            print(f"{data=}")
-            return False
-
-        if data.get("api"):
-            self.logger.debug("Setting base url to %s", data.get("api"))
-            self.base_url = data.get("api")
-        self.token = json.dumps(data.get("data"))
-        self.logger.debug("Done login, token: %s", self.token)
-        return True
 
     def call(
         self,
@@ -280,46 +155,11 @@ class API:
         payload: Any,
         max_tries: int = 3,
         timeout: int = 10,
-    ) -> dict[str, Any]:  # pylint: disable=unused-argument
-        """makes a call to the API"""
-        for i in range(1, max_tries):
-            try:
-                self.logger.debug(
-                    "Pulling the following URL: base_url='%s', url='%s'",
-                    self.base_url,
-                    url,
-                )
-                response = self.session.post(
-                    self.base_url + url,
-                    headers=self.headers,
-                    data=payload,
-                    timeout=timeout,
-                )
-                response.raise_for_status()
-                data = response.json()
-                self.logger.debug("call response.json(): %s", json.dumps(data))
+    ) -> dict[str, Any]:
+        """Retained interface; Classic route calls have no SEMS+ equivalent."""
+        raise NotImplementedError("Classic API routes are no longer supported")
 
-                # APIs return "success", "Success", "Successful" in the 'msg'
-                # seen "Successful" in ExportPowerStationPac
-                if data.get("msg", "").lower() in SUCCESS_MESSAGES and "data" in data:  # pylint: disable=no-else-return
-                    self.logger.debug("Returning data: %s", json.dumps(data["data"], default=str))
-                    result: dict[str, Any] = data.get("data")
-                    return result
-                self.logger.debug(json.dumps(data))
-
-                self.logger.debug("Logging in again...")
-                if not self.do_login():
-                    self.logger.error("Failed to log in, bailing")
-                    return {}
-            except requests.exceptions.RequestException as exp:
-                self.logger.error("RequestException: %s", exp)
-            self.logger.debug("Sleeping for %s seconds...", i)
-            time.sleep(i)
-
-        self.logger.error("Failed to call GoodWe API url='%s'", self.base_url + url)
-        return {}
-
-    def parseValue(self, value: str, unit: str) -> float:  # pylint: disable=invalid-name
+    def parseValue(self, value: str, unit: str) -> float:
         """takes a string value and reutrns it as a float (if possible)"""
         try:
             return float(value.rstrip(unit))
@@ -347,17 +187,20 @@ class API:
             self.getCurrentReadings()
         if "inverter" not in self.data:
             raise ValueError("Couldn't get data...")
-        return [float(inverter.get("invert_full", {}).get("soc")) for inverter in self.data["inverter"]]
+        values = [inverter.get("invert_full", {}).get("soc") for inverter in self.data["inverter"]]
+        if any(value is None for value in values):
+            raise ValueError("Per-inverter state of charge is unavailable")
+        return [float(value) for value in values]
 
     def get_batteries_soc(self) -> list[float] | float:
         """return the battery state of charge"""
         return self._get_batteries_soc()
 
-    def getPVFlow(self) -> float:  # pylint: disable=invalid-name
+    def getPVFlow(self) -> float:
         """PV flow data"""
         raise NotImplementedError("SingleInverter has this, multi does not")
 
-    def getVoltage(self) -> list[float] | float:  # pylint: disable=invalid-name
+    def getVoltage(self) -> list[float] | float:
         """returns the a list of the first AC channel voltages"""
         if not self.data:
             self.getCurrentReadings(True)
@@ -365,13 +208,13 @@ class API:
             raise ValueError("Couldn't get data...")
         return [float(inverter.get("invert_full", {}).get("vac1")) for inverter in self.data["inverter"]]
 
-    def getPmeter(self) -> float:  # pylint: disable=invalid-name
+    def getPmeter(self) -> float:
         """gets the current line pmeter"""
         if not self.data:
             self.getCurrentReadings()
         return float(self.data.get("inverter", {}).get("invert_full", {}).get("pmeter"))
 
-    def getLoadFlow(self) -> list[float] | float:  # pylint: disable=invalid-name
+    def getLoadFlow(self) -> list[float] | float:
         """returns the list of inverter multi-unit load watts"""
         raise NotImplementedError("multi-unit load watts isn't implemented yet")
 
@@ -385,7 +228,7 @@ class API:
 
     def getDataPvoutput(
         self,
-    ) -> dict[str, str | float]:  # pylint: disable=invalid-name
+    ) -> dict[str, str | float]:
         """updates and returns the data necessary for a one-shot pvoutput upload
         'd' : testdate.strftime("%Y%m%d"),
         't' : testtime.strftime("%H:%M"),
@@ -425,7 +268,6 @@ class API:
 class SingleInverter(API):
     """API implementation for an account with a single inverter"""
 
-    # pylint: disable=too-many-arguments
     def __init__(
         self,
         system_id: str,
@@ -528,17 +370,17 @@ class SingleInverter(API):
     def getLoadFlow(self) -> float:
         if not self.data:
             self.getCurrentReadings()
-        if self.data["powerflow"]["bettery"].endswith("(W)"):
-            loadflow = float(self.data["powerflow"]["load"][:-3])
-        else:
-            loadflow = float(self.data["powerflow"]["load"])
+        load = self.data["powerflow"]["load"]
+        loadflow = float(load.removesuffix("(W)"))
         # I'd love to see the *house* generate power
-        if self.data["powerflow"]["loadStatus"] == -1:
+        if self.data["powerflow"].get("loadStatus") == -1:
             loadflow_direction = "Importing"
-        elif self.data["powerflow"]["loadStatus"] == 1:
+        elif self.data["powerflow"].get("loadStatus") == 1:
             loadflow_direction = "Using Battery"
+        elif "loadStatus" not in self.data["powerflow"]:
+            loadflow_direction = "Unknown"
         else:
-            raise ValueError(f"Your 'load' is doing something odd - status is '{self.data['powerflow']['loadStatus']}''.")  # pylint: disable=line-too-long
+            raise ValueError(f"Your 'load' is doing something odd - status is '{self.data['powerflow']['loadStatus']}''.")
         self.loadflow = loadflow
         self.loadflow_direction = loadflow_direction
         return loadflow
@@ -564,7 +406,7 @@ class SingleInverter(API):
 
     def getDataPvoutput(
         self,
-    ) -> dict[str, str | float]:  # pylint: disable=invalid-name
+    ) -> dict[str, str | float]:
         """updates and returns the data necessary for a one-shot pvoutput upload
         'd' : testdate.strftime("%Y%m%d"),
         't' : testtime.strftime("%H:%M"),
