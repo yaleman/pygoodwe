@@ -24,3 +24,8 @@
 * 0.1.9 2025-02-25 Moving to uv for package management.
 * 0.1.10 2025-09-19 Fix #356 - Handle Chinese success message in Excel endpoint, package updates.
 * 0.1.11 2026-01-28 Minimum Python raised to 3.12.
+* 0.2.0 2026-10-20 Migrated live readings to SEMS+ Web and removed the Classic backend (#425).
+    * Preserved `API` and `SingleInverter` constructors and reading methods, mapping available station flow, device telemetry, and energy counters into the existing `data` layout.
+    * Added SEMS+ authentication, session renewal, and typed errors, including rate-limit handling.
+    * Unavailable or permission-restricted readings remain absent rather than being replaced with zero. `info.time` now records the local retrieval time.
+    * Breaking changes: `call`, `getDayDetailedReadingsExcel`, and `getPowerStationPowerReportByMonth` now raise `NotImplementedError`. The `api_url` and `user_agent` arguments no longer override routing or headers.
